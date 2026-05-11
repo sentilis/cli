@@ -4,12 +4,8 @@ slug: "productivity-tools-2026"
 category: "Productivity"
 status: published
 visibility: public
-tags:
-  - productivity
-  - tools
-  - lifestyle
-authors:
-  - The Pragmatic Dev
+tags: productivity, tools, lifestyle
+authors: The Pragmatic Dev
 ---
 
 # Top 10 Productivity Tools

@@ -31,6 +31,7 @@ const main = defineCommand({
     auth: () => import("./auth/command.js").then((m) => m.default),
     press: () => import("./press/command.js").then((m) => m.default),
     market: () => import("./market/command.js").then((m) => m.default),
+    bio: () => import("./bio/command.js").then((m) => m.default),
   },
 });
 

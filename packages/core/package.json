@@ -1,6 +1,6 @@
 {
   "name": "@sentilis/core",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "Sentilis Core SDK",
   "main": "dist/api.js",
   "type": "module",
@@ -17,6 +17,10 @@
       "types": "./dist/market/index.d.ts",
       "import": "./dist/market/index.js"
     },
+    "./bio": {
+      "types": "./dist/bio/index.d.ts",
+      "import": "./dist/bio/index.js"
+    },
     "./press/markdown": {
       "types": "./dist/press/markdown.d.ts",
       "import": "./dist/press/markdown.js"
@@ -24,6 +28,10 @@
     "./market/markdown": {
       "types": "./dist/market/markdown.d.ts",
       "import": "./dist/market/markdown.js"
+    },
+    "./bio/markdown": {
+      "types": "./dist/bio/markdown.d.ts",
+      "import": "./dist/bio/markdown.js"
     }
   },
   "scripts": {

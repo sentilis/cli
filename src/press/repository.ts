@@ -36,7 +36,7 @@ async function collectAssets(
     assets.set(ref, new Uint8Array(data.buffer, data.byteOffset, data.byteLength));
   };
 
-  if (press.metadata.image) await addRef(press.metadata.image);
+  if (press.metadata.cover) await addRef(press.metadata.cover);
   for (const img of press.images) await addRef(img.src);
   for (const video of press.videos) await addRef(video.src);
 }

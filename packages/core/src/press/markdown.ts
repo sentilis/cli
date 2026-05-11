@@ -3,7 +3,6 @@ import type { LifecycleStatus, LifecycleVisibility } from "../types.js";
 import {
   splitFrontmatter,
   unquote,
-  parseInlineList,
   slugify,
   validateSlug,
   validateTag,
@@ -37,41 +36,18 @@ export function parseFrontmatter(raw: string): {
 
 /**
  * Minimal YAML parser for press frontmatter:
- * name, slug, category, status, visibility, tags (list), authors (list).
+ * name, slug, category, status, visibility, tags (csv), authors (csv).
+ *
+ * `tags` and `authors` are comma-separated strings in the markdown file
+ * (e.g. `tags: a, b, c`) and surfaced to the rest of the pipeline as arrays.
  */
 function parseSimpleYaml(yaml: string): Partial<PressMetadata> {
   const result: Partial<PressMetadata> = {};
   const lines = yaml.split(/\r?\n/);
 
-  let tags: string[] = [];
-  let collectingTags = false;
-  let authors: string[] = [];
-  let collectingAuthors = false;
-
   for (const line of lines) {
-    const listMatch = line.match(/^\s+-\s+"?([^"]*)"?\s*$/);
-    if (listMatch && collectingTags) {
-      tags.push(listMatch[1].trim());
-      continue;
-    }
-    if (listMatch && collectingAuthors) {
-      authors.push(listMatch[1].trim());
-      continue;
-    }
-
     const kvMatch = line.match(/^(\w+)\s*:\s*(.*)/);
     if (!kvMatch) continue;
-
-    if (collectingTags) {
-      result.tags = tags;
-      tags = [];
-      collectingTags = false;
-    }
-    if (collectingAuthors) {
-      result.authors = authors;
-      authors = [];
-      collectingAuthors = false;
-    }
 
     const key = kvMatch[1].trim();
     const rawValue = kvMatch[2].trim();
@@ -94,38 +70,35 @@ function parseSimpleYaml(yaml: string): Partial<PressMetadata> {
       case "visibility":
         if (isValidVisibility(rawValue)) result.visibility = rawValue;
         break;
-      case "image": {
+      case "cover": {
         const value = unquote(rawValue);
-        result.image = value === "" || value === "null" ? null : value;
+        result.cover = value === "" || value === "null" ? null : value;
         break;
       }
       case "tags":
-        collectingTags = true;
-        if (rawValue && rawValue !== "") {
-          const inline = parseInlineList(rawValue);
-          if (inline) {
-            result.tags = inline;
-            collectingTags = false;
-          }
-        }
+        result.tags = parseCsvList(rawValue);
         break;
       case "authors":
-        collectingAuthors = true;
-        if (rawValue && rawValue !== "") {
-          const inline = parseInlineList(rawValue);
-          if (inline) {
-            result.authors = inline;
-            collectingAuthors = false;
-          }
-        }
+        result.authors = parseCsvList(rawValue);
         break;
     }
   }
 
-  if (collectingTags && tags.length > 0) result.tags = tags;
-  if (collectingAuthors && authors.length > 0) result.authors = authors;
-
   return result;
+}
+
+/**
+ * Split a comma-separated frontmatter value into a trimmed list. Strips
+ * surrounding quotes from each item and drops empty entries so trailing
+ * commas don't produce ghost values.
+ */
+function parseCsvList(rawValue: string): string[] {
+  const value = unquote(rawValue);
+  if (value === "") return [];
+  return value
+    .split(",")
+    .map((item) => unquote(item.trim()))
+    .filter((item) => item !== "");
 }
 
 function isValidStatus(s: string): s is LifecycleStatus {
@@ -149,7 +122,7 @@ export function buildMetadata(
   inferredName: string,
   statusFallback: LifecycleStatus = "published",
   visibilityFallback: LifecycleVisibility = "public",
-  autoDetected: { image: string | null } = { image: null },
+  autoDetected: { cover: string | null } = { cover: null },
 ): PressMetadata {
   const name = partial.name ?? inferredName;
   let slug: string;
@@ -169,7 +142,7 @@ export function buildMetadata(
     category: partial.category ?? null,
     status: partial.status ?? statusFallback,
     visibility: partial.visibility ?? visibilityFallback,
-    image: partial.image ?? autoDetected.image,
+    cover: partial.cover ?? autoDetected.cover,
     tags,
     authors: partial.authors ?? [],
   };

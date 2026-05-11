@@ -14,7 +14,7 @@ export interface PressMetadata {
   category: string | null;
   status: LifecycleStatus;
   visibility: LifecycleVisibility;
-  image: string | null;
+  cover: string | null;
   tags: string[];
   authors: string[];
 }

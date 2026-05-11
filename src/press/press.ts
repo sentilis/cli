@@ -178,11 +178,11 @@ function resolveLinkSlugs(files: PressFile[]): void {
 // ---------- File reading & validation ----------
 
 const ATTACHMENTS_DIR = "attachments";
-const IMAGE_CANDIDATES = [
-  "image.png",
-  "image.jpg",
-  "image.jpeg",
-  "image.webp",
+const COVER_CANDIDATES = [
+  "cover.png",
+  "cover.jpg",
+  "cover.jpeg",
+  "cover.webp",
 ];
 
 async function readPressFile(
@@ -213,10 +213,10 @@ async function readPressFile(
   const raw = await readFile(filePath, "utf-8");
   const { metadata: partial, body } = parseFrontmatter(raw);
 
-  // Auto-detect image in ./attachments/ when not set explicitly
+  // Auto-detect cover in ./attachments/ when not set explicitly
   const autoDetected = allowAttachments
     ? await autoDetectAssets(rootDir, partial)
-    : { image: null };
+    : { cover: null };
 
   // buildMetadata can throw on bad slug/tag; wrap so we keep collecting.
   let metadata;
@@ -238,7 +238,7 @@ async function readPressFile(
       category: partial.category ?? null,
       status: partial.status ?? statusFallback ?? "published",
       visibility: partial.visibility ?? visibilityFallback ?? "public",
-      image: partial.image ?? autoDetected.image,
+      cover: partial.cover ?? autoDetected.cover,
       tags: [],
       authors: partial.authors ?? [],
     };
@@ -246,11 +246,11 @@ async function readPressFile(
 
   const dir = dirname(filePath);
 
-  // Validate explicit image frontmatter field
-  if (metadata.image) {
-    const ref = metadata.image;
+  // Validate explicit cover frontmatter field
+  if (metadata.cover) {
+    const ref = metadata.cover;
     if (ref.startsWith("http://") || ref.startsWith("https://")) {
-      // remote images are OK for OpenGraph
+      // remote covers are OK for OpenGraph
     } else {
       await safe(async () => {
         const decoded = decodeURIComponent(ref);
@@ -268,7 +268,7 @@ async function readPressFile(
           .catch(() => false);
         if (!exists) {
           throw new Error(
-            `Image file not found: "${ref}" referenced in metadata of ${filePath}`,
+            `Cover file not found: "${ref}" referenced in metadata of ${filePath}`,
           );
         }
       });
@@ -391,15 +391,15 @@ async function readPressFile(
 async function autoDetectAssets(
   rootDir: string,
   partial: Partial<import("@sentilis/core/press").PressMetadata>,
-): Promise<{ image: string | null }> {
+): Promise<{ cover: string | null }> {
   const attachmentsRoot = join(rootDir, ATTACHMENTS_DIR);
-  const out: { image: string | null } = {
-    image: null,
+  const out: { cover: string | null } = {
+    cover: null,
   };
 
-  if (partial.image === undefined) {
+  if (partial.cover === undefined) {
     const matches: string[] = [];
-    for (const candidate of IMAGE_CANDIDATES) {
+    for (const candidate of COVER_CANDIDATES) {
       const abs = join(attachmentsRoot, candidate);
       const exists = await access(abs)
         .then(() => true)
@@ -408,13 +408,13 @@ async function autoDetectAssets(
     }
     if (matches.length > 1) {
       throw new Error(
-        `Multiple image candidates found in ./${ATTACHMENTS_DIR}/: ${matches.join(
+        `Multiple cover candidates found in ./${ATTACHMENTS_DIR}/: ${matches.join(
           ", ",
-        )}. Set the "image" field explicitly to pick one.`,
+        )}. Set the "cover" field explicitly to pick one.`,
       );
     }
     if (matches.length === 1) {
-      out.image = `./${ATTACHMENTS_DIR}/${matches[0]}`;
+      out.cover = `./${ATTACHMENTS_DIR}/${matches[0]}`;
     }
   }
 

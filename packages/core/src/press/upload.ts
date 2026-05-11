@@ -43,7 +43,7 @@ function basenameOf(p: string): string {
  *     (e.g. `./attachments/foo.png`). The server keys assets by that name.
  *
  * `assets` should contain every local (non-remote) ref appearing in any
- * entry's `images`, `videos`, or `metadata.image`.
+ * entry's `images`, `videos`, or `metadata.cover`.
  */
 export function buildPressFormData(
   upload: PressUpload,

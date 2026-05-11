@@ -22,9 +22,9 @@ This repository is a monorepo using NPM workspaces.
 
 ## Project Structure
 
-- `apps/cli`: The source code for `@sentilis/cli`.
-- `packages/core`: The source code for `@sentilis/core`.
-- `examples`: Persona-based examples for testing and documentation.
+- `src/`: The source code for `@sentilis/cli` (this is the root package).
+- `packages/core/`: The source code for `@sentilis/core`.
+- `examples/`: Persona-based examples for testing and documentation.
 
 ## Coding Standards
 
