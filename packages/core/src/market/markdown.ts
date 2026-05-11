@@ -56,7 +56,6 @@ function isValidType(s: string): s is ProductType {
   return (
     s === "service" ||
     s === "product" ||
-    s === "subscription" ||
     s === "digital"
   );
 }
@@ -88,7 +87,7 @@ function parseSimpleYaml(yaml: string): Partial<ProductMetadata> {
         if (isValidType(value)) result.kind = value;
         else
           throw new Error(
-            `Invalid product kind "${value}": must be one of service, product, subscription, digital.`,
+            `Invalid product kind "${value}": must be one of service, product, and digital.`,
           );
         break;
       }

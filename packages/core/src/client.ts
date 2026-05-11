@@ -17,6 +17,7 @@ function resolveApiBase(env?: string): string {
 export const AUTH_ENDPOINT = "/openapi/v1/auth/token";
 export const PRESS_ENDPOINT = "/openapi/v1/press";
 export const MARKET_ENDPOINT = "/openapi/v1/market";
+export const BIO_ENDPOINT = "/openapi/v1/bio";
 
 export interface AuthTokenResponse {
   data: { username: string };
@@ -127,6 +128,76 @@ export interface ProductListParams {
 }
 
 export interface ProductRemoveResponse {
+  data: { id: string };
+}
+
+export interface BioPublishResponse {
+  data: {
+    id: string;
+    slug: string;
+    created: boolean;
+  };
+}
+
+export interface BioListItem {
+  id: string;
+  slug: string;
+  language: string;
+  name: string;
+  role: string | null;
+  status: string;
+  visibility: string;
+  url: string;
+}
+
+export interface BioListResponse {
+  data: BioListItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface BioListParams {
+  visibility?: string[];
+  page?: number;
+  limit?: number;
+}
+
+export interface BioInfoChild {
+  id: string;
+  slug: string;
+  language: string;
+  name: string;
+  role: string | null;
+  status: string;
+  visibility: string;
+  url: string;
+}
+
+export interface BioInfoResponse {
+  data: {
+    id: string;
+    parent: string | null;
+    slug: string;
+    language: string;
+    status: string;
+    visibility: string;
+    hasPassword: boolean;
+    avatarUrl: string | null;
+    name: string;
+    role: string | null;
+    location: string | null;
+    email: string | null;
+    phone: string | null;
+    url: string;
+    children: BioInfoChild[];
+  };
+}
+
+export interface BioRemoveResponse {
   data: { id: string };
 }
 
@@ -317,6 +388,38 @@ export class RestClient {
     return this.request<ProductRemoveResponse>(
       "DELETE",
       `${MARKET_ENDPOINT}/${encodeURIComponent(id)}`,
+    );
+  }
+
+  async uploadBio(formData: FormData): Promise<BioPublishResponse> {
+    return this.uploadMultipart<BioPublishResponse>(BIO_ENDPOINT, formData);
+  }
+
+  async listBio(params: BioListParams = {}): Promise<BioListResponse> {
+    const search = new URLSearchParams();
+    if (params.visibility && params.visibility.length > 0) {
+      for (const v of params.visibility) {
+        search.append("visibility", v);
+      }
+    }
+    if (params.page !== undefined) search.set("page", String(params.page));
+    if (params.limit !== undefined) search.set("limit", String(params.limit));
+    const qs = search.toString();
+    const path = qs ? `${BIO_ENDPOINT}?${qs}` : BIO_ENDPOINT;
+    return this.request<BioListResponse>("GET", path);
+  }
+
+  async getBio(id: string): Promise<BioInfoResponse> {
+    return this.request<BioInfoResponse>(
+      "GET",
+      `${BIO_ENDPOINT}/${encodeURIComponent(id)}`,
+    );
+  }
+
+  async removeBio(id: string): Promise<BioRemoveResponse> {
+    return this.request<BioRemoveResponse>(
+      "DELETE",
+      `${BIO_ENDPOINT}/${encodeURIComponent(id)}`,
     );
   }
 }

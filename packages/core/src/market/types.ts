@@ -1,6 +1,6 @@
 import type { LifecycleStatus, LifecycleVisibility } from "../types.js";
 
-export type ProductType = "service" | "product" | "subscription" | "digital";
+export type ProductType = "service" | "product" | "digital";
 
 export interface ProductMetadata {
   name: string;

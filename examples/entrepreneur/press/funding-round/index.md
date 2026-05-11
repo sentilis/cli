@@ -4,12 +4,8 @@ slug: "sentilis-seed-round-announcement"
 category: "News"
 status: published
 visibility: public
-tags:
-  - funding
-  - seed
-  - startup
-authors:
-  - Alex Chen (CEO)
+tags: funding, seed, startup
+authors: Alex Chen (CEO)
 ---
 
 # Sentilis Raises $2M Seed Round

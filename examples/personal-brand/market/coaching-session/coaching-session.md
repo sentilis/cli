@@ -1,6 +1,6 @@
 ---
 name: "1-on-1 Technical Strategy Session"
-slug: "coaching-session"
+slug: "coaching-session-tech"
 kind: service
 category: "Consulting"
 status: published

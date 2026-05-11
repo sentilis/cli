@@ -9,15 +9,6 @@ Ideal for startups looking to announce funding or sell high-value digital assets
 *   **Press:** Seed Round Announcement (`entrepreneur/press/funding-round`)
 *   **Market:** Pitch Deck Template (`entrepreneur/market/pitch-deck`)
 
-### 🛠️ Solofounder
-Perfect for "Building in Public" and Micro-SaaS.
-*   **Press:** Monthly Revenue Report (`solofounder/press/revenue-report`)
-*   **Market:** Lifetime Deal (`solofounder/market/lifetime-deal`)
-
-### 🏢 BigTech
-Tailored for enterprise engineering blogs and high-availability API subscriptions.
-*   **Press:** Scaling to 10M RPM Blog Series (`bigtech/press/scaling-10m-rpm`)
-*   **Market:** Enterprise API Access (`bigtech/market/enterprise-api`)
 
 ### ✍️ Personal Brand
 For consultants, coaches, and content creators.

@@ -52,17 +52,6 @@ export function unquote(s: string): string {
   return s;
 }
 
-/**
- * Parse an inline YAML list: `[a, b]`, `["a", "b"]`, or `[]`.
- * Returns null if the value is not in inline list form.
- */
-export function parseInlineList(value: string): string[] | null {
-  const match = value.match(/^\[([^\]]*)\]$/);
-  if (!match) return null;
-  if (match[1].trim() === "") return [];
-  return match[1].split(",").map((t) => unquote(t.trim()));
-}
-
 // ---------- Slug & tag validation ----------
 
 const SLUG_FORMAT_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;

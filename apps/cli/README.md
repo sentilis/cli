@@ -101,12 +101,12 @@ Every Markdown file must start with a YAML frontmatter block. The following fiel
 ### Press Specific
 
 *   **`image`**: Path to cover image for social sharing (OpenGraph) in `./attachments/`. Auto-detected if a file named `image.{png,jpg,jpeg,webp}` exists.
-*   **`tags`**: List of strings for filtering.
-*   **`authors`**: List of strings representing the creators.
+*   **`tags`**: Comma-separated string of filtering tags (e.g. `tags: engineering, scale`). Parsed into an array.
+*   **`authors`**: Comma-separated string of creators (e.g. `authors: Alice, Bob`). Parsed into an array.
 
 ### Market Specific (Beta)
 
-*   **`kind`**: Type of product (`service`, `product`, `subscription`, `digital`).
+*   **`kind`**: Type of product (`service`, `product`, `digital`).
 *   **`price`**: Numeric value (>= 0).
 *   **`currency`**: ISO code (e.g., `USD`).
 *   **`image`**: Path to cover image in `./attachments/`.
