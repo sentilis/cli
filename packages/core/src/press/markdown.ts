@@ -70,9 +70,9 @@ function parseSimpleYaml(yaml: string): Partial<PressMetadata> {
       case "visibility":
         if (isValidVisibility(rawValue)) result.visibility = rawValue;
         break;
-      case "image": {
+      case "cover": {
         const value = unquote(rawValue);
-        result.image = value === "" || value === "null" ? null : value;
+        result.cover = value === "" || value === "null" ? null : value;
         break;
       }
       case "tags":
@@ -122,7 +122,7 @@ export function buildMetadata(
   inferredName: string,
   statusFallback: LifecycleStatus = "published",
   visibilityFallback: LifecycleVisibility = "public",
-  autoDetected: { image: string | null } = { image: null },
+  autoDetected: { cover: string | null } = { cover: null },
 ): PressMetadata {
   const name = partial.name ?? inferredName;
   let slug: string;
@@ -142,7 +142,7 @@ export function buildMetadata(
     category: partial.category ?? null,
     status: partial.status ?? statusFallback,
     visibility: partial.visibility ?? visibilityFallback,
-    image: partial.image ?? autoDetected.image,
+    cover: partial.cover ?? autoDetected.cover,
     tags,
     authors: partial.authors ?? [],
   };
