@@ -1,29 +1,43 @@
 ---
-name: TechSolutions Agency
+name: Jane Doe
 language: fr
-role: Software Development Agency
-location: Buenos Aires, AR
-email: hello@techsolutions.com
-phone: "+54 11 1234 5678"
-linkedin: https://linkedin.com/company/techsolutions
-website: https://techsolutions.com
+role: Staff Engineer & Coach Technique
+location: Mexico City, MX
+email: jane.doe@example.com
+phone: "+52 55 1234 5678"
+linkedin: https://linkedin.com/in/janedoe
+github: https://github.com/janedoe
 ---
 
-## About Us
+## Résumé Professionnel
 
-TechSolutions is a boutique agency specialized in creating scalable B2B platforms and AI-driven solutions. We help startups and corporations modernize their digital infrastructure.
+Je suis Staff Engineer et Coach Technique, connue en ligne sous le nom de "The Pragmatic Dev". Avec plus de 10 ans d'expérience dans la conception de systèmes cloud évolutifs, j'aide aujourd'hui d'autres développeurs à faire évoluer leur carrière, à optimiser leurs architectures et à développer leur marque personnelle.
 
-## Our Services
+J'utilise des flux de travail modernes — centrés sur des outils comme Zed, Raycast et l'IA invisible — pour maximiser la productivité et fournir des solutions techniques robustes.
 
-### Custom Development
-- **Build** web and mobile applications using React, Node.js, and Serverless architectures.
-- **Integrate** third-party APIs and payment gateways with high security standards.
+## Expérience
 
-### Artificial Intelligence Consulting
-- **Train** language models to automate internal support processes.
-- **Reduced** customer service time by 60% in our latest projects by implementing autonomous agents.
+### Coach Technique & Consultante - Sentilis Inc. / Indépendante
+*Janvier 2021 - Présent | À distance*
 
-## Featured Clients
+- **Consulting :** Sessions de stratégie technique en 1-to-1, revues d'architecture et mentorat pour passer de Senior à Staff Engineer.
+- **Création de contenu :** Publication d'articles techniques et de newsletters sur la productivité via Sentilis, fidélisant ainsi une audience de développeurs.
+- **Ingénierie :** Direction de la refonte de l'architecture du produit Market, réduisant la latence de chargement de 40%.
 
-- **Fintech Latam:** Complete re-engineering of their transactional platform, now supporting over 10k transactions per second.
-- **AgroSmart:** Development of a mobile IoT application for real-time crop monitoring.
+### Développeuse Senior - TechCorp
+*Mars 2015 - Décembre 2020 | Madrid, ES*
+
+- **Développement** d'API RESTful avec Node.js et PostgreSQL, supportant plus d'un million d'utilisateurs actifs.
+- **Optimisation** de requêtes de bases de données critiques, améliorant les performances du système de 25%.
+
+## Formation
+
+### Master en Informatique
+*Université Nationale Autonome du Mexique | 2012 - 2014*
+
+## Compétences
+
+- **Langages :** Python, TypeScript, Go.
+- **Infrastructure :** AWS, Kubernetes, Docker.
+- **Productivité :** Zed, Raycast, Linear, Développement assisté par IA.
+- **Langues :** Espagnol (Natif), Anglais (C1 - Avancé), Français (Intermédiaire).

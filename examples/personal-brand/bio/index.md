@@ -3,7 +3,7 @@ name: Jane Doe
 language: en
 status: published
 visibility: public
-role: Software Architect
+role: Staff Engineer & Technical Coach
 location: Mexico City, MX
 email: jane.doe@example.com
 phone: "+52 55 1234 5678"
@@ -13,16 +13,18 @@ github: https://github.com/janedoe
 
 ## Professional Summary
 
-Software architect with over 10 years of experience leading distributed teams and designing scalable cloud systems. Specialized in transforming business requirements into robust technical solutions.
+I am a Staff Engineer and Technical Coach, known online as "The Pragmatic Dev." With over 10 years of experience designing scalable cloud systems, I now help other developers level up their careers, refine their system architectures, and build their personal brands. 
+
+I leverage modern workflows—centered around tools like Zed, Raycast, and invisible AI—to maximize productivity and deliver robust technical solutions.
 
 ## Experience
 
-### Lead Software Engineer - Sentilis Inc.
+### Technical Coach & Consultant - Sentilis Inc. / Independent
 *January 2021 - Present | Remote*
 
-- **Led** the redesign of the Market product architecture, reducing load latency by 40%.
-- **Implemented** a CI/CD pipeline that decreased deployment times from hours to minutes.
-- **Managed** a team of 5 engineers using agile methodologies (Scrum).
+- **Consulting:** Provide 1-on-1 technical strategy sessions covering architecture reviews and career growth from Senior to Staff Engineer.
+- **Content Creation:** Publish technical insights and productivity newsletters using Sentilis, building a dedicated audience of developers.
+- **Engineering:** Led the redesign of the Market product architecture, reducing load latency by 40%.
 
 ### Senior Developer - TechCorp
 *March 2015 - December 2020 | Madrid, ES*
@@ -39,6 +41,7 @@ Software architect with over 10 years of experience leading distributed teams an
 
 - **Languages:** Python, TypeScript, Go.
 - **Infrastructure:** AWS, Kubernetes, Docker.
-- **Languages:** Spanish (Native), English (C1 - Advanced).
+- **Workflow:** Zed, Raycast, Linear, AI-assisted development.
+- **Languages:** Spanish (Native), English (C1 - Advanced), French (Intermediate).
 
 ![Avatar](./attachments/avatar.jpeg)
