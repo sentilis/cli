@@ -14,9 +14,9 @@
 
 ## Description
 
-The **`@sentilis/core`** library provides the foundational APIs, models, and HTTP clients to programmatically interact with the Sentilis platform. It powers the official [Sentilis CLI](../../apps/cli/README.md) and custom integrations.
+The **`@sentilis/core`** library provides the foundational APIs, models, and HTTP clients to programmatically interact with the Sentilis platform. It powers the official [Sentilis CLI](../../README.md) and custom integrations.
 
-Sentilis is built around **developer-first publishing**. Everything is structured, validated, and managed locally using Markdown before syncing to the cloud.
+Everything is structured, validated, and managed locally using Markdown before syncing to the cloud.
 
 ## Installation
 
@@ -24,29 +24,10 @@ Sentilis is built around **developer-first publishing**. Everything is structure
 $ npm install @sentilis/core
 ```
 
-## Getting Started
-
-Initialize the REST client with your Sentilis token and interact with the platform services.
-
-```typescript
-import { RestClient } from '@sentilis/core';
-
-// Initialize the client
-const client = new RestClient('your-access-token', 'prod');
-
-// Example: Fetch press entries
-const result = await client.listPress({
-  rootOnly: true,
-  page: 1,
-  limit: 20
-});
-
-console.log(result.data);
-```
-
 ### Core Modules
 
-*   **`RestClient`**: High-level wrapper for Sentilis HTTP APIs (`listPress`, `removePress`, `listProduct`, `removeProduct`, `publishPress`, `publishProduct`).
+*   **`RestClient`**: High-level wrapper for Sentilis HTTP APIs.
+*   **`bio`**: Profile / resume parsing with multi-language variant support.
 *   **`press`**: Extensible Markdown validation and parsing for press resources and their attachments.
 *   **`market`**: Intelligent product schema validation and parsing.
 
