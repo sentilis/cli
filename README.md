@@ -43,7 +43,7 @@ Other authentication commands:
 *   `sentilis auth logout`: Remove the active profile.
 *   `sentilis auth logout --all`: Remove all saved profiles.
 
-## Global Options
+### Global Options
 
 *   `--profile <name>`, `-p`: Use a specific authentication profile.
 
@@ -51,7 +51,7 @@ Other authentication commands:
 
 Manage your Sentilis Bio (resume / profile). New to Bios? Read [What is a Bio?](https://sentilis.me/en/press/what-is-a-bio-6a016eb9550ca18de606688f?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=bio-section).
 
-*   **Push:** Deploy a bio from a Markdown file or a directory of language variants.
+*   **Push:** Deploy a bio from a Markdown file or a directory of language variants. Use `--dry-run` to validate syntax and assets without pushing.
     ```bash
     $ sentilis bio push ./examples/personal-brand/bio
     ```
@@ -145,7 +145,7 @@ my-content/
 *   **All local assets must live inside `./attachments/`.** References that escape the directory (`../foo.png`, absolute paths, symlinks) are rejected before upload.
 *   **Auto-detection.** In `market`, if no `image` or `attachment` field is set in frontmatter, the CLI probes `./attachments/image.{png,jpg,jpeg,webp}` and `./attachments/attachment.zip` automatically.
 *   **Single-file mode.** A standalone `.md` can be pushed directly (no directory, no assets). Useful for quick drafts.
-*   **Run `--dry-run` first.** `press push` and `market push` accept `--dry-run` to validate frontmatter, links, and asset paths without uploading.
+*   **Run `--dry-run` first.** `bio push`, `press push`, and `market push` accept `--dry-run` to validate frontmatter, links, and asset paths without uploading.
 *   **Version control.** This layout is plain text + binaries; commit the whole `my-content/` tree to `git` to track edits over time.
 
 See the [`examples/`](./examples) directory for real layouts (e.g. `personal-brand`, `entrepreneur`).
@@ -158,8 +158,8 @@ See the [`examples/`](./examples) directory for real layouts (e.g. `personal-bra
 
 ## Stay in touch
 
-- Author - [Sentilis](https://sentilis.me)
-- Website - [https://sentilis.me](https://sentilis.me)
+- Author - [Sentilis](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-author)
+- Website - [https://about.sentilis.me](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-website)
 - X - [https://x.com/SentilisMe](https://x.com/SentilisMe)
 
 ## Support
