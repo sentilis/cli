@@ -6,6 +6,7 @@ export {
   validateToken,
   type PressPublishResponse,
   type ProductPublishResponse,
+  type ProductAttachmentResponse,
   type BioPublishResponse,
 } from "./client.js";
 export type { Config, Profile, LifecycleStatus, LifecycleVisibility } from "./types.js";

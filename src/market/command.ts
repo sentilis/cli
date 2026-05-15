@@ -191,5 +191,64 @@ export default defineCommand({
         }
       },
     }),
+    attach: defineCommand({
+      meta: {
+        name: "attach",
+        description: "Upload a private attachment to a product by ID",
+      },
+      args: {
+        id: {
+          type: "positional",
+          description: "Product ID",
+          required: true,
+        },
+        file: {
+          type: "positional",
+          description: "Path to the file to attach",
+          required: true,
+        },
+      },
+      async run({ args }) {
+        try {
+          const id = String(args.id).trim();
+          if (!id) {
+            throw new Error("Product ID is required.");
+          }
+
+          const { stat, readFile } = await import("node:fs/promises");
+          const { basename, isAbsolute, resolve } = await import("node:path");
+
+          const filePath = isAbsolute(args.file)
+            ? args.file
+            : resolve(args.file);
+          const info = await stat(filePath).catch(() => null);
+          if (!info || !info.isFile()) {
+            throw new Error(`File does not exist: ${filePath}`);
+          }
+          if (info.size === 0) {
+            throw new Error(`File is empty: ${filePath}`);
+          }
+
+          const { requireAuth } = await import("../config.js");
+          const profile = await requireAuth();
+          const { RestClient } = await import("@sentilis/core");
+
+          const data = await readFile(filePath);
+          const ab = new ArrayBuffer(data.byteLength);
+          new Uint8Array(ab).set(data);
+
+          const formData = new FormData();
+          formData.append("file", new Blob([ab]), basename(filePath));
+
+          const client = new RestClient(profile.token, profile.env);
+          const res = await client.attachProduct(id, formData);
+
+          console.log(`Attachment uploaded for product ${res.data.id}.`);
+          console.log(`  Attachment: ${res.data.attachment}`);
+        } catch (err) {
+          reportError(err);
+        }
+      },
+    }),
   },
 });

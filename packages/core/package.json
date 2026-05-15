@@ -2,6 +2,7 @@
   "name": "@sentilis/core",
   "version": "0.5.0",
   "description": "Sentilis Core SDK",
+  "license": "MIT",
   "main": "dist/api.js",
   "type": "module",
   "exports": {

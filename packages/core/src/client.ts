@@ -131,6 +131,13 @@ export interface ProductRemoveResponse {
   data: { id: string };
 }
 
+export interface ProductAttachmentResponse {
+  data: {
+    id: string;
+    attachment: string;
+  };
+}
+
 export interface BioPublishResponse {
   data: {
     id: string;
@@ -388,6 +395,16 @@ export class RestClient {
     return this.request<ProductRemoveResponse>(
       "DELETE",
       `${MARKET_ENDPOINT}/${encodeURIComponent(id)}`,
+    );
+  }
+
+  async attachProduct(
+    id: string,
+    formData: FormData,
+  ): Promise<ProductAttachmentResponse> {
+    return this.uploadMultipart<ProductAttachmentResponse>(
+      `${MARKET_ENDPOINT}/${encodeURIComponent(id)}/attachment`,
+      formData,
     );
   }
 
