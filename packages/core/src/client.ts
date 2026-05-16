@@ -1,10 +1,3 @@
-import { createRequire } from "node:module";
-import os from "node:os";
-
-const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pkg = require("../package.json") as { name: string; version: string };
-
 const API_URLS: Record<string, string> = {
   dev: "http://localhost:4321",
   prod: "https://api.sentilis.me",
@@ -12,6 +5,21 @@ const API_URLS: Record<string, string> = {
 
 function resolveApiBase(env?: string): string {
   return API_URLS[env ?? "prod"] ?? API_URLS.prod;
+}
+
+/**
+ * Cross-runtime check for a `DEBUG` env flag. Avoids referencing `process`
+ * directly so the module is safe to import in browsers / edge runtimes.
+ */
+function isDebug(): boolean {
+  try {
+    return Boolean(
+      (globalThis as { process?: { env?: { DEBUG?: string } } }).process?.env
+        ?.DEBUG,
+    );
+  } catch {
+    return false;
+  }
 }
 
 export const AUTH_ENDPOINT = "/openapi/v1/auth/token";
@@ -212,35 +220,32 @@ export interface BioRemoveResponse {
  * Build the Basic Auth header value for a password-only credential.
  * RFC 7617: encode "<username>:<password>" in base64. When there is no
  * username the colon is still required → ":password".
+ *
+ * Uses `btoa` for isomorphic support (Node 16+ and all browsers).
  */
 function basicAuth(token: string): string {
-  const encoded = Buffer.from(`:${token}`).toString("base64");
-  return `Basic ${encoded}`;
+  return `Basic ${btoa(`:${token}`)}`;
 }
 
-/**
- * Common request headers that identify the client origin.
- */
-function clientMetaHeaders(): Record<string, string> {
-  return {
-    Origin: "https://sentilis.me",
-    "x-ss-tenant-id": "cli",
-    "X-Client-Name": pkg.name,
-    "X-Client-Version": pkg.version,
-    "X-OS-Platform": os.platform(),
-    "X-OS-Release": os.release(),
-    "X-OS-Arch": os.arch(),
-    "X-Node-Version": process.version,
-  };
+export interface RestClientOptions {
+  /**
+   * Extra headers to send on every request. Used by callers to inject
+   * client-identifying metadata (e.g. `X-Client-Name`, `X-OS-Platform`).
+   * The core stays runtime-agnostic; environment-specific values are the
+   * caller's responsibility.
+   */
+  headers?: Record<string, string>;
 }
 
 export class RestClient {
   private token: string;
   private apiBase: string;
+  private extraHeaders: Record<string, string>;
 
-  constructor(token: string, env?: string) {
+  constructor(token: string, env?: string, options: RestClientOptions = {}) {
     this.token = token;
     this.apiBase = resolveApiBase(env);
+    this.extraHeaders = options.headers ?? {};
   }
 
   private async request<T>(
@@ -252,7 +257,7 @@ export class RestClient {
     const res = await fetch(url, {
       method,
       headers: {
-        ...clientMetaHeaders(),
+        ...this.extraHeaders,
         Authorization: basicAuth(this.token),
         "Content-Type": "application/json",
       },
@@ -285,7 +290,7 @@ export class RestClient {
   ): Promise<T> {
     const url = `${this.apiBase}${path}`;
 
-    if (process.env.DEBUG) {
+    if (isDebug()) {
       const keys: string[] = [];
       formData.forEach((_v, k) => keys.push(k));
       console.error(`[DEBUG] POST ${url}`);
@@ -304,7 +309,7 @@ export class RestClient {
     const res = await fetch(url, {
       method: "POST",
       headers: {
-        ...clientMetaHeaders(),
+        ...this.extraHeaders,
         Authorization: basicAuth(this.token),
         // Content-Type is intentionally omitted: fetch sets
         // "multipart/form-data; boundary=..." automatically with the correct boundary.
@@ -314,7 +319,7 @@ export class RestClient {
 
     const text = await res.text();
 
-    if (process.env.DEBUG) {
+    if (isDebug()) {
       console.error(`[DEBUG] Response status: ${res.status}`);
       console.error(`[DEBUG] Response body: ${text}`);
     }
@@ -448,12 +453,13 @@ export class RestClient {
 export async function validateToken(
   token: string,
   env?: string,
+  options: RestClientOptions = {},
 ): Promise<string> {
   const url = `${resolveApiBase(env)}${AUTH_ENDPOINT}`;
   const res = await fetch(url, {
     method: "GET",
     headers: {
-      ...clientMetaHeaders(),
+      ...(options.headers ?? {}),
       Authorization: basicAuth(token),
     },
   });

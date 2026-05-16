@@ -4,6 +4,7 @@ export * as bio from "./bio/index.js";
 export {
   RestClient,
   validateToken,
+  type RestClientOptions,
   type PressPublishResponse,
   type ProductPublishResponse,
   type ProductAttachmentResponse,

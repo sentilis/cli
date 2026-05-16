@@ -75,11 +75,11 @@ export default defineCommand({
         try {
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
           const { publishPress } = await import("./repository.js");
 
           const result = await createPress(args.path);
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
 
           const res = await publishPress(client, result);
 
@@ -131,9 +131,9 @@ export default defineCommand({
         try {
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
 
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
 
           let visibilityArr: string[] = [];
           if (Array.isArray(args.visibility)) {
@@ -191,9 +191,9 @@ export default defineCommand({
         try {
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
 
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
           const result = await client.getPress(String(args.id));
           const p = result.data;
 
@@ -239,9 +239,9 @@ export default defineCommand({
         try {
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
 
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
           await client.removePress(String(args.id));
           console.log(`Press entry ${args.id} removed.`);
         } catch (err) {

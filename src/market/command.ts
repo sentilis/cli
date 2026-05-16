@@ -85,11 +85,11 @@ export default defineCommand({
         try {
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
           const { publishProduct } = await import("./repository.js");
 
           const result = await createProduct(args.path);
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
           const res = await publishProduct(client, result);
 
           const { metadata } = result.main;
@@ -131,9 +131,9 @@ export default defineCommand({
         try {
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
 
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
           const result = await client.listProduct({
             page: Number(args.page) || 1,
             limit: Number(args.limit) || 20,
@@ -181,9 +181,9 @@ export default defineCommand({
         try {
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
 
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
           await client.removeProduct(String(args.id));
           console.log(`Product ${args.id} removed.`);
         } catch (err) {
@@ -231,7 +231,7 @@ export default defineCommand({
 
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
-          const { RestClient } = await import("@sentilis/core");
+          const { createClient } = await import("../client.js");
 
           const data = await readFile(filePath);
           const ab = new ArrayBuffer(data.byteLength);
@@ -240,7 +240,7 @@ export default defineCommand({
           const formData = new FormData();
           formData.append("file", new Blob([ab]), basename(filePath));
 
-          const client = new RestClient(profile.token, profile.env);
+          const client = createClient(profile);
           const res = await client.attachProduct(id, formData);
 
           console.log(`Attachment uploaded for product ${res.data.id}.`);

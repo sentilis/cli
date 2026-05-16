@@ -20,8 +20,11 @@ export default defineCommand({
       async run({ args }) {
         const { validateToken } = await import("@sentilis/core");
         const { login, getConfigPath } = await import("../config.js");
+        const { buildClientHeaders } = await import("../client.js");
         try {
-          const username = await validateToken(args.token, args.env);
+          const username = await validateToken(args.token, args.env, {
+            headers: buildClientHeaders(),
+          });
           await login(args.token, username, args.env);
           console.log(
             `Logged in as "${username}" (${args.env}). Config saved to ${getConfigPath()}`,
