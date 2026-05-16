@@ -49,7 +49,7 @@ Other authentication commands:
 
 ### 2. Bio Commands
 
-Manage your Sentilis Bio (resume / profile). New to Bios? Read [What is a Bio?](https://sentilis.me/en/press/what-is-a-bio-6a016eb9550ca18de606688f?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=bio-section).
+Manage your Sentilis Bio (resume / profile). New to Bios? Read [What is a Bio?](https://about.sentilis.me/bio?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=bio-section).
 
 *   **Push:** Deploy a bio from a Markdown file or a directory of language variants. Use `--dry-run` to validate syntax and assets without pushing.
     ```bash
@@ -70,7 +70,7 @@ Manage your Sentilis Bio (resume / profile). New to Bios? Read [What is a Bio?](
 
 ### 3. Press Commands
 
-Manage your Sentilis Press entries and articles. New to Press? Read [What is a Press?](https://sentilis.me/en/press/what-is-a-press-69f1aa4c8d8ef9e4cd7491c8?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=press-section).
+Manage your Sentilis Press entries and articles. New to Press? Read [What is a Press?](https://about.sentilis.me/press?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=press-section).
 
 *   **Push:** Deploy an article from a Markdown directory. Sentilis automatically handles multi-file structures and assets.
     ```bash
@@ -91,7 +91,7 @@ Manage your Sentilis Press entries and articles. New to Press? Read [What is a P
 
 ### 4. Market Commands
 
-Manage your Sentilis Market products. New to Market? Read [What is Market?](https://sentilis.me/en/press/what-is-market-6a016eba550ca18de6066893?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=market-section).
+Manage your Sentilis Market products. New to Market? Read [What is Market?](https://about.sentilis.me/market?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=market-section).
 
 *   **Push:** Validate and deploy a new product from a Markdown file. Use `--dry-run` to validate syntax and attachments without pushing.
     ```bash
@@ -111,42 +111,7 @@ Manage your Sentilis Market products. New to Market? Read [What is Market?](http
     ```
 
 
-## Suggested Workspace Layout
 
-The CLI accepts either a single Markdown file or a directory. We recommend organizing your content one folder per *persona* (a brand, a side-project, a client), with one subfolder per command type. Each entry that needs binary assets (cover image, attachments, embedded media) lives in its own subdirectory with a sibling `./attachments/` folder.
-
-```
-my-content/
-├── bio/                              # one bio per persona
-│   ├── index.md                      # default language
-│   ├── es.md                         # language variants
-│   ├── fr.md
-│   └── attachments/
-│       └── avatar.png
-├── press/
-│   ├── productivity-tools/
-│   │   ├── productivity-tools.md
-│   │   └── attachments/
-│   │       ├── image.png
-│   │       └── chart.png
-│   └── another-article.md            # standalone, no assets
-└── market/
-    ├── coaching-session/
-    │   ├── coaching-session.md
-    │   └── attachments/
-    │       ├── image.png             # auto-detected as cover
-    │       └── attachment.zip        # auto-detected as deliverable
-    └── lifetime-deal.md              # standalone product
-```
-
-**Conventions worth knowing:**
-
-*   **One `.md` per directory.** A push from a directory expects exactly one `.md` file — that file is the entry. The folder name is independent of the slug (which comes from the frontmatter).
-*   **All local assets must live inside `./attachments/`.** References that escape the directory (`../foo.png`, absolute paths, symlinks) are rejected before upload.
-*   **Auto-detection.** In `market`, if no `image` or `attachment` field is set in frontmatter, the CLI probes `./attachments/image.{png,jpg,jpeg,webp}` and `./attachments/attachment.zip` automatically.
-*   **Single-file mode.** A standalone `.md` can be pushed directly (no directory, no assets). Useful for quick drafts.
-*   **Run `--dry-run` first.** `bio push`, `press push`, and `market push` accept `--dry-run` to validate frontmatter, links, and asset paths without uploading.
-*   **Version control.** This layout is plain text + binaries; commit the whole `my-content/` tree to `git` to track edits over time.
 
 See the [`examples/`](./examples) directory for real layouts (e.g. `personal-brand`, `entrepreneur`).
 
@@ -157,8 +122,6 @@ See the [`examples/`](./examples) directory for real layouts (e.g. `personal-bra
 *   **[@sentilis/core](./packages/core/README.md)**: TypeScript SDK for building custom integrations and parsing Sentilis-flavored Markdown.
 
 ## Stay in touch
-
-- Author - [Sentilis](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-author)
 - Website - [https://about.sentilis.me](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-website)
 - X - [https://x.com/SentilisMe](https://x.com/SentilisMe)
 
