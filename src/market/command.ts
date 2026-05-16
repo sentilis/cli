@@ -1,4 +1,7 @@
 import { defineCommand } from "citty";
+import { formatIssue } from "@sentilis/core";
+import { createProduct, publishProduct } from "@sentilis/core/market";
+import { NodeFileSystem } from "@sentilis/core/node";
 
 function reportError(err: unknown): never {
   const e = err as Error;
@@ -9,14 +12,15 @@ function reportError(err: unknown): never {
   process.exit(1);
 }
 
+const fs = new NodeFileSystem();
+
 export default defineCommand({
   meta: { name: "market", description: "Manage market products" },
   subCommands: {
     push: defineCommand({
       meta: {
         name: "push",
-        description:
-          "Push a product from a markdown file or directory",
+        description: "Push a product from a markdown file or directory",
       },
       args: {
         path: {
@@ -33,23 +37,25 @@ export default defineCommand({
         },
       },
       async run({ args }) {
-        const { createProduct } = await import("./market.js");
-
         const dryRun = args["dry-run"] === true;
 
         if (dryRun) {
           try {
-            const result = await createProduct(args.path, {
+            const result = await createProduct(fs, args.path, {
               collectErrors: true,
             });
-            if (result.errors.length > 0) {
+            if (result.issues.length > 0) {
               console.error(
-                `Found ${result.errors.length} validation error${
-                  result.errors.length === 1 ? "" : "s"
+                `Found ${result.issues.length} validation error${
+                  result.issues.length === 1 ? "" : "s"
                 }:`,
               );
-              for (const e of result.errors) {
-                console.error(`  - [${e.file}] ${e.message}`);
+              for (const issue of result.issues) {
+                console.error(
+                  `  - [${issue.code}] ${
+                    issue.file ? `(${issue.file}) ` : ""
+                  }${formatIssue(issue)}`,
+                );
               }
               process.exit(1);
             }
@@ -86,16 +92,13 @@ export default defineCommand({
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
           const { createClient } = await import("../client.js");
-          const { publishProduct } = await import("./repository.js");
 
-          const result = await createProduct(args.path);
+          const result = await createProduct(fs, args.path);
           const client = createClient(profile);
-          const res = await publishProduct(client, result);
+          const res = await publishProduct(client, fs, result);
 
           const { metadata } = result.main;
-          console.log(
-            `Product pushed: ${metadata.name} (id: ${res.data.id})`,
-          );
+          console.log(`Product pushed: ${metadata.name} (id: ${res.data.id})`);
           console.log(`  URL:      ${res.data.url}`);
           console.log(`  Slug:     ${res.data.slug ?? metadata.slug}`);
           console.log(`  Kind:     ${metadata.kind}`);

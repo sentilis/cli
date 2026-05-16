@@ -1,4 +1,7 @@
 import { defineCommand } from "citty";
+import { formatIssue } from "@sentilis/core";
+import { createPress, publishPress } from "@sentilis/core/press";
+import { NodeFileSystem } from "@sentilis/core/node";
 
 function reportError(err: unknown): never {
   const e = err as Error;
@@ -8,6 +11,8 @@ function reportError(err: unknown): never {
   }
   process.exit(1);
 }
+
+const fs = new NodeFileSystem();
 
 export default defineCommand({
   meta: { name: "press", description: "Manage press" },
@@ -32,23 +37,25 @@ export default defineCommand({
         },
       },
       async run({ args }) {
-        const { createPress } = await import("./press.js");
-
         const dryRun = args["dry-run"] === true;
 
         if (dryRun) {
           try {
-            const result = await createPress(args.path, {
+            const result = await createPress(fs, args.path, {
               collectErrors: true,
             });
-            if (result.errors.length > 0) {
+            if (result.issues.length > 0) {
               console.error(
-                `Found ${result.errors.length} validation error${
-                  result.errors.length === 1 ? "" : "s"
+                `Found ${result.issues.length} validation error${
+                  result.issues.length === 1 ? "" : "s"
                 }:`,
               );
-              for (const e of result.errors) {
-                console.error(`  - [${e.file}] ${e.message}`);
+              for (const issue of result.issues) {
+                console.error(
+                  `  - [${issue.code}] ${
+                    issue.file ? `(${issue.file}) ` : ""
+                  }${formatIssue(issue)}`,
+                );
               }
               process.exit(1);
             }
@@ -65,8 +72,6 @@ export default defineCommand({
               );
             }
           } catch (err) {
-            // Fatal structural errors (missing path, no .md files, etc.)
-            // surface here even in dry-run mode.
             reportError(err);
           }
           return;
@@ -76,17 +81,14 @@ export default defineCommand({
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
           const { createClient } = await import("../client.js");
-          const { publishPress } = await import("./repository.js");
 
-          const result = await createPress(args.path);
+          const result = await createPress(fs, args.path);
           const client = createClient(profile);
 
-          const res = await publishPress(client, result);
+          const res = await publishPress(client, fs, result);
 
           const { metadata } = result.main;
-          console.log(
-            `Press pushed: ${metadata.name} (id: ${res.data.id})`,
-          );
+          console.log(`Press pushed: ${metadata.name} (id: ${res.data.id})`);
           console.log(`  URL:      ${res.data.url}`);
           console.log(`  Slug:     ${res.data.slug ?? metadata.slug}`);
           console.log(`  Status:   ${metadata.status}`);
@@ -139,7 +141,7 @@ export default defineCommand({
           if (Array.isArray(args.visibility)) {
             visibilityArr = args.visibility;
           } else if (typeof args.visibility === "string") {
-            visibilityArr = args.visibility.split(",").map(s => s.trim());
+            visibilityArr = args.visibility.split(",").map((s) => s.trim());
           }
 
           const result = await client.listPress({
@@ -216,7 +218,8 @@ export default defineCommand({
               console.log(`    - [${child.id}] ${child.name}`);
               console.log(`        Slug:       ${child.slug}`);
               if (child.status) console.log(`        Status:     ${child.status}`);
-              if (child.visibility) console.log(`        Visibility: ${child.visibility}`);
+              if (child.visibility)
+                console.log(`        Visibility: ${child.visibility}`);
               if (child.category) console.log(`        Category:   ${child.category}`);
               if (child.url) console.log(`        URL:        ${child.url}`);
             }

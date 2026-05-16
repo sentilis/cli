@@ -1,4 +1,7 @@
 import { defineCommand } from "citty";
+import { formatIssue } from "@sentilis/core";
+import { createBio, publishBio } from "@sentilis/core/bio";
+import { NodeFileSystem } from "@sentilis/core/node";
 
 function reportError(err: unknown): never {
   const e = err as Error;
@@ -8,6 +11,8 @@ function reportError(err: unknown): never {
   }
   process.exit(1);
 }
+
+const fs = new NodeFileSystem();
 
 export default defineCommand({
   meta: { name: "bio", description: "Manage bios" },
@@ -33,23 +38,25 @@ export default defineCommand({
         },
       },
       async run({ args }) {
-        const { createBio } = await import("./bio.js");
-
         const dryRun = args["dry-run"] === true;
 
         if (dryRun) {
           try {
-            const result = await createBio(args.path, {
+            const result = await createBio(fs, args.path, {
               collectErrors: true,
             });
-            if (result.errors.length > 0) {
+            if (result.issues.length > 0) {
               console.error(
-                `Found ${result.errors.length} validation error${
-                  result.errors.length === 1 ? "" : "s"
+                `Found ${result.issues.length} validation error${
+                  result.issues.length === 1 ? "" : "s"
                 }:`,
               );
-              for (const e of result.errors) {
-                console.error(`  - [${e.file}] ${e.message}`);
+              for (const issue of result.issues) {
+                console.error(
+                  `  - [${issue.code}] ${
+                    issue.file ? `(${issue.file}) ` : ""
+                  }${formatIssue(issue)}`,
+                );
               }
               process.exit(1);
             }
@@ -82,17 +89,14 @@ export default defineCommand({
           const { requireAuth } = await import("../config.js");
           const profile = await requireAuth();
           const { createClient } = await import("../client.js");
-          const { publishBio } = await import("./repository.js");
 
-          const result = await createBio(args.path);
+          const result = await createBio(fs, args.path);
           const client = createClient(profile);
 
-          const res = await publishBio(client, result);
+          const res = await publishBio(client, fs, result);
 
           const { metadata } = result.main;
-          console.log(
-            `Bio pushed: ${metadata.name} (id: ${res.data.id})`,
-          );
+          console.log(`Bio pushed: ${metadata.name} (id: ${res.data.id})`);
           console.log(`  Slug:        ${res.data.slug ?? metadata.slug}`);
           console.log(`  Default:     ${metadata.language}`);
           console.log(`  Status:      ${metadata.status}`);
@@ -141,9 +145,7 @@ export default defineCommand({
           if (Array.isArray(args.visibility)) {
             visibilityArr = args.visibility;
           } else if (typeof args.visibility === "string") {
-            visibilityArr = args.visibility
-              .split(",")
-              .map((s) => s.trim());
+            visibilityArr = args.visibility.split(",").map((s) => s.trim());
           }
 
           const result = await client.listBio({
@@ -164,8 +166,7 @@ export default defineCommand({
             console.log(`     Language:   ${b.language}`);
             if (b.role) console.log(`     Role:       ${b.role}`);
             if (b.status) console.log(`     Status:     ${b.status}`);
-            if (b.visibility)
-              console.log(`     Visibility: ${b.visibility}`);
+            if (b.visibility) console.log(`     Visibility: ${b.visibility}`);
             console.log(`     URL:        ${b.url}`);
           }
 
@@ -221,8 +222,7 @@ export default defineCommand({
               console.log(`        Slug:       ${c.slug}`);
               if (c.role) console.log(`        Role:       ${c.role}`);
               if (c.status) console.log(`        Status:     ${c.status}`);
-              if (c.visibility)
-                console.log(`        Visibility: ${c.visibility}`);
+              if (c.visibility) console.log(`        Visibility: ${c.visibility}`);
               console.log(`        URL:        ${c.url}`);
             }
           }

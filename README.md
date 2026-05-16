@@ -14,7 +14,7 @@
 
 ## Description
 
-The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. Built on top of [`@sentilis/core`](./packages/core/README.md), it enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
+The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. Built on top of [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core), it enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
 
 ## Installation
 
@@ -114,12 +114,6 @@ Manage your Sentilis Market products. New to Market? Read [What is Market?](http
 
 
 See the [`examples/`](./examples) directory for real layouts (e.g. `personal-brand`, `entrepreneur`).
-
-
-
-## Related Packages
-
-*   **[@sentilis/core](./packages/core/README.md)**: TypeScript SDK for building custom integrations and parsing Sentilis-flavored Markdown.
 
 ## Stay in touch
 - Website - [https://about.sentilis.me](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-website)
