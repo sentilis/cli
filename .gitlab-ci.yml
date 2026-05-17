@@ -5,20 +5,9 @@
 #     compiles the CLI, and smoke-tests it across the supported Node matrix.
 #   • Tag push matching `v*` (e.g. v0.5.1) → `publish` job pushes to npm.
 #
-# Local-dev vs. CI dependency on @sentilis/core:
-#   • In package.json, "@sentilis/core" is "file:../sentilis.core" for a
-#     seamless DX when both repos are siblings on disk.
-#   • In CI the sibling does not exist, so before install we rewrite the
-#     reference to a published version range (SENTILIS_CORE_VERSION).
-#     This also guarantees the published @sentilis/cli tarball points at
-#     the registry, not a file path.
-#
 # Required CI/CD variables (Project → Settings → CI/CD → Variables):
 #   • NPM_TOKEN — npm automation token with publish rights. Mark "Masked"
 #     and "Protected" (only exposed to protected branches/tags).
-
-variables:
-  SENTILIS_CORE_VERSION: "^0.5.0"
 
 stages:
   - build
@@ -33,7 +22,6 @@ default:
     paths:
       - .npm/
   before_script:
-    - npm pkg set "dependencies.@sentilis/core=${SENTILIS_CORE_VERSION}"
     - npm install --no-audit --no-fund --cache .npm --prefer-offline
 
 # ────────────────────────────────────────────────────────────────
