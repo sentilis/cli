@@ -16,6 +16,8 @@
 
 The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. Built on top of [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core), it enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
 
+> Looking for ready-made starting points? Browse the [Awesome Templates for Bio, Market & Press](https://sentilis.me/en/press/awesome-templates-bio-market-press-6a0b2e43550ca18de60a7d8a).
+
 ## Installation
 
 Install the CLI globally using npm:
@@ -32,6 +34,8 @@ $ npm install -g @sentilis/cli
 ### 1. Authentication
 
 To use the CLI, you must first authenticate with your personal token.
+
+> Get your token at [https://id.sentilis.me/login](https://id.sentilis.me/login).
 
 ```bash
 $ sentilis auth login <your-token>
