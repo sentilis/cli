@@ -110,8 +110,24 @@ Manage your Sentilis Market products. New to Market? Read [What is Market?](http
     $ sentilis market remove <id>
     ```
 
+### 5. Sync
 
+Validate and publish every entry under a workspace directory in one shot. A workspace is a folder containing any of `bio/`, `press/`, or `market/` — typically one persona per workspace, the same layout the `examples/` directory uses. Designed for the same flow locally and in CI: install, login, run `sentilis sync`.
 
+*   **Push everything (lenient, default):** Walk the workspace, validate each entry, report issues on bad ones, and publish the clean ones. Use this when partial progress is preferable.
+    ```bash
+    $ sentilis sync ./examples/personal-brand
+    ```
+*   **Strict mode:** If *any* entry has validation issues, abort the whole run without publishing anything. Use this in CI to make a bad file fail the pipeline.
+    ```bash
+    $ sentilis sync ./examples/personal-brand --strict
+    ```
+*   **Dry run:** Validate everything without uploading. Combine with `--strict` to mirror the CI gate locally before committing.
+    ```bash
+    $ sentilis sync ./examples/personal-brand --dry-run --strict
+    ```
+
+Exit codes are pipeline-friendly: `0` only when every requested step succeeded; `1` when a publish call fails, when `--strict` finds issues, or when nothing publishable was found.
 
 See the [`examples/`](./examples) directory for real layouts (e.g. `personal-brand`, `entrepreneur`).
 
