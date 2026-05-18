@@ -13,13 +13,11 @@
 </p>
 
 ![cover.png](cover.png)
-<p align="center"><em>How your entry looks on Sentilis.</em></p>
+> How your entry looks on Sentilis. [See it live →](https://sentilis.me/en)
 
 ## Description
 
 The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. Built on top of [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core), it enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
-
-> Looking for ready-made starting points? Browse the [Awesome Templates for Bio, Market & Press](https://sentilis.me/en/press/awesome-templates-bio-market-press-6a0b2e43550ca18de60a7d8a).
 
 ## Installation
 
@@ -137,7 +135,8 @@ Validate and publish every entry under a workspace directory in one shot. A work
 
 Exit codes are pipeline-friendly: `0` only when every requested step succeeded; `1` when a publish call fails, when `--strict` finds issues, or when nothing publishable was found.
 
-See the [`examples/`](./examples) directory for real layouts (e.g. `personal-brand`, `entrepreneur`).
+
+> Looking for ready-made starting points? Browse the [Awesome Templates for Bio, Market & Press](https://sentilis.me/en/press/awesome-templates-bio-market-press-6a0b2e43550ca18de60a7d8a).
 
 ## Stay in touch
 - Website - [https://about.sentilis.me](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-website)
