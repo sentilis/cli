@@ -12,6 +12,9 @@
 <a href="https://www.npmjs.com/package/@sentilis/cli" target="_blank"><img src="https://img.shields.io/npm/dm/@sentilis/cli.svg" alt="NPM Downloads" /></a>
 </p>
 
+![cover.png](cover.png)
+<p align="center"><em>How your entry looks on Sentilis.</em></p>
+
 ## Description
 
 The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. Built on top of [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core), it enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
@@ -80,6 +83,7 @@ Manage your Sentilis Press entries and articles. New to Press? Read [What is a P
     ```bash
     $ sentilis press push ./examples/bigtech/press/scaling-10m-rpm
     ```
+    > **Cover image:** if no `cover:` field is set in frontmatter, the CLI auto-detects `./attachments/cover.{png,jpg,jpeg,webp}` as the cover.
 *   **List:** View your press entries. Use `--visibility` to filter by access level (e.g., `public`, `private`, `protected`, `prime`). Defaults to `public`. Multiple values can be comma-separated.
     ```bash
     $ sentilis press list --visibility=public,private
