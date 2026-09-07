@@ -18,7 +18,6 @@
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "@sentilis/core": "^1.1.0",
     "citty": "^0.2.1"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import { defineCommand } from "citty";
-import { formatIssue } from "@sentilis/core";
-import { createBio, publishBio } from "@sentilis/core/bio";
-import { NodeFileSystem } from "@sentilis/core/node";
+import { formatIssue } from "../sdk/errors.js";
+import { createBio, publishBio } from "../sdk/bio/index.js";
+import { NodeFileSystem } from "../sdk/node.js";
 
 function reportError(err: unknown): never {
   const e = err as Error;
