@@ -34,7 +34,7 @@ export interface ProductCreateResult {
   issues: ValidationIssue[];
 }
 
-/** Wire-shape sent to `POST /openapi/v1/market`. */
+/** Wire-shape sent to `POST /api/v1/market/products`. */
 export interface ProductUpload {
   metadata: ProductMetadata;
   content: string;

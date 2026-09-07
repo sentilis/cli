@@ -17,7 +17,6 @@ export function buildClientHeaders(): Record<string, string> {
   if (cached) return cached;
   cached = {
     Origin: "https://sentilis.me",
-    "X-Sentilis-Id": "cli",
     "X-Client-Name": pkg.name,
     "X-Client-Version": pkg.version,
     "X-OS-Platform": os.platform(),

@@ -26,7 +26,7 @@ function basenameOf(p: string): string {
 }
 
 /**
- * Build a multipart `FormData` payload for `POST /openapi/v1/bio`.
+ * Build a multipart `FormData` payload for `POST /api/v1/bio`.
  *
  * Layout:
  *   - `manifest`: JSON string of the `BioUpload`
