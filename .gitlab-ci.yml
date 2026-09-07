@@ -111,7 +111,41 @@ publish:
         *)   NPM_TAG="latest" ;;
       esac
       echo "Publishing $PKG_VERSION under dist-tag $NPM_TAG"
+
+      # The registry answers 404 — not 401 or 403 — to a publish it will not
+      # authorize, so a missing or dead credential is indistinguishable from
+      # "this package does not exist". Diagnose it here, before npm gets the
+      # chance to report the wrong thing.
+      if [ -z "${NPM_TOKEN:-}" ]; then
+        echo "ERROR: NPM_TOKEN is empty in this job."
+        echo
+        echo "If the variable is marked Protected, GitLab only exposes it to"
+        echo "pipelines on protected branches and protected TAGS. A release tag"
+        echo "that is not covered by a protected-tag rule gets an empty value."
+        echo "Fix by either:"
+        echo "  • adding a protected-tag rule for v*"
+        echo "    (Settings -> Repository -> Protected tags), or"
+        echo "  • clearing the Protected flag on the variable"
+        echo "    (Settings -> CI/CD -> Variables)."
+        exit 1
+      fi
+
       echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+      if ! NPM_USER=$(npm whoami 2>&1); then
+        echo "ERROR: the registry rejected NPM_TOKEN."
+        echo "  $NPM_USER"
+        echo
+        echo "The token is expired, revoked, or lacks write access. Issue a new"
+        echo "one with read-write rights on the @sentilis scope. Note that npm"
+        echo "granular tokens expire (90 days maximum) while classic automation"
+        echo "tokens do not — an automation token is the low-maintenance choice"
+        echo "for CI, and npm trusted publishing (OIDC) removes the long-lived"
+        echo "secret altogether."
+        exit 1
+      fi
+
+      echo "Authenticated to npm as $NPM_USER"
       npm publish --access public --tag "$NPM_TAG"
   rules:
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(-[\w.]+)?$/
