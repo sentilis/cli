@@ -38,7 +38,7 @@ $ npm install -g @sentilis/cli
 
 To use the CLI, you must first authenticate with your personal token.
 
-> Get your token at [https://id.sentilis.me/login](https://id.sentilis.me/login).
+> Get your token at [https://sentilis.me/login](https://sentilis.me/login).
 
 ```bash
 $ sentilis auth login <your-token>

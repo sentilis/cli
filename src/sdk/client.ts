@@ -1,6 +1,9 @@
 const API_URLS: Record<string, string> = {
   dev: "http://localhost:4321",
-  prod: "https://api.sentilis.me",
+  // The API is served by the platform app on its main host. `api.sentilis.me`
+  // resolves but is not routed to it — every path there answers 404 — so it is
+  // not a usable base URL today.
+  prod: "https://sentilis.me",
 };
 
 function resolveApiBase(env?: string): string {
