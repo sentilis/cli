@@ -23,7 +23,7 @@ function basenameOf(p: string): string {
 }
 
 /**
- * Build a multipart `FormData` payload for `POST /openapi/v1/market`.
+ * Build a multipart `FormData` payload for `POST /api/v1/market/products`.
  *
  * Layout:
  *   - `manifest`: JSON string of the `ProductUpload`

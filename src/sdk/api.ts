@@ -5,7 +5,11 @@ export * as workspace from "./workspace/index.js";
 
 export {
   RestClient,
+  SentilisApiError,
   validateToken,
+  type ApiError,
+  type ListPageParams,
+  type Pagination,
   type RestClientOptions,
   type PressPublishResponse,
   type PressListItem,

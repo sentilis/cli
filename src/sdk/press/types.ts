@@ -63,7 +63,7 @@ export interface PressEntryUpload {
 }
 
 /**
- * Structured payload sent by every client to `POST /openapi/v1/press`.
+ * Structured payload sent by every client to `POST /api/v1/press`.
  * Sent as the `manifest` JSON field of a multipart request, alongside
  * one binary part per asset.
  */

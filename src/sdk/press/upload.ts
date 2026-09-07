@@ -29,7 +29,7 @@ function basenameOf(p: string): string {
 }
 
 /**
- * Build the multipart `FormData` for `POST /openapi/v1/press`.
+ * Build the multipart `FormData` for `POST /api/v1/press`.
  *
  * Layout:
  *  - `manifest`: JSON string of the `PressUpload`

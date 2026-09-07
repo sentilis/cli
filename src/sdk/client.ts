@@ -1,6 +1,9 @@
 const API_URLS: Record<string, string> = {
   dev: "http://localhost:4321",
-  prod: "https://api.sentilis.me",
+  // The API is served by the platform app on its main host. `api.sentilis.me`
+  // resolves but is not routed to it — every path there answers 404 — so it is
+  // not a usable base URL today.
+  prod: "https://sentilis.me",
 };
 
 function resolveApiBase(env?: string): string {
@@ -22,21 +25,70 @@ function isDebug(): boolean {
   }
 }
 
-export const AUTH_ENDPOINT = "/openapi/v1/auth/token";
-export const PRESS_ENDPOINT = "/openapi/v1/press";
-export const MARKET_ENDPOINT = "/openapi/v1/market";
-export const BIO_ENDPOINT = "/openapi/v1/bio";
+export const AUTH_ENDPOINT = "/api/v1/auth/token";
+export const PRESS_ENDPOINT = "/api/v1/press";
+export const MARKET_ENDPOINT = "/api/v1/market/products";
+export const BIO_ENDPOINT = "/api/v1/bio";
 
 export interface AuthTokenResponse {
   data: { username: string };
 }
 
+/**
+ * Page mode reports totals; cursor mode (`after`) reports where to continue
+ * and skips the count, so `total` / `totalPages` are absent there.
+ */
+export interface Pagination {
+  page?: number;
+  limit: number;
+  total?: number;
+  totalPages?: number;
+  /** Pass back as `after` to fetch the next page. */
+  nextCursor?: string | null;
+  hasMore?: boolean;
+}
+
+/** Paging arguments shared by every list endpoint. */
+export interface ListPageParams {
+  page?: number;
+  limit?: number;
+  /** Cursor from a previous `pagination.nextCursor`. */
+  after?: string;
+}
+
 export interface ApiError {
   error: {
-    code: number;
+    /** Stable string code, e.g. "UNAUTHORIZED", "RATE_LIMITED". */
+    code: string;
     message: string;
-    status: string;
+    /** HTTP status, mirrored in the body. */
+    status: number;
   };
+}
+
+/**
+ * Error thrown when the API answers with the error envelope. Keeps `message`
+ * for callers that only print it, and exposes the machine-readable parts so a
+ * CLI or plugin can react (back off on 429, explain a 413, re-login on 401).
+ */
+export class SentilisApiError extends Error {
+  readonly code: string;
+  readonly status: number;
+  /** Seconds to wait, from the `Retry-After` header on a 429. */
+  readonly retryAfter?: number;
+
+  constructor(
+    code: string,
+    message: string,
+    status: number,
+    retryAfter?: number,
+  ) {
+    super(message);
+    this.name = "SentilisApiError";
+    this.code = code;
+    this.status = status;
+    this.retryAfter = retryAfter;
+  }
 }
 
 export interface PressPublishResponse {
@@ -61,18 +113,11 @@ export interface PressListItem {
 
 export interface PressListResponse {
   data: PressListItem[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+  pagination: Pagination;
 }
 
-export interface PressListParams {
+export interface PressListParams extends ListPageParams {
   visibility?: string[];
-  page?: number;
-  limit?: number;
 }
 
 export interface PressInfoResponse {
@@ -128,18 +173,10 @@ export interface ProductListItem {
 
 export interface ProductListResponse {
   data: ProductListItem[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+  pagination: Pagination;
 }
 
-export interface ProductListParams {
-  page?: number;
-  limit?: number;
-}
+export type ProductListParams = ListPageParams;
 
 export interface ProductRemoveResponse {
   data: { id: string };
@@ -174,18 +211,11 @@ export interface BioListItem {
 
 export interface BioListResponse {
   data: BioListItem[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+  pagination: Pagination;
 }
 
-export interface BioListParams {
+export interface BioListParams extends ListPageParams {
   visibility?: string[];
-  page?: number;
-  limit?: number;
 }
 
 export interface BioInfoChild {
@@ -224,14 +254,50 @@ export interface BioRemoveResponse {
 }
 
 /**
- * Build the Basic Auth header value for a password-only credential.
- * RFC 7617: encode "<username>:<password>" in base64. When there is no
- * username the colon is still required → ":password".
- *
- * Uses `btoa` for isomorphic support (Node 16+ and all browsers).
+ * The profile access token (`sen_…`) travels as a bearer credential.
+ * It replaced the password-only Basic scheme when the API was unified under
+ * `/api/v1`; the old scheme is rejected by the server.
  */
-function basicAuth(token: string): string {
-  return `Basic ${btoa(`:${token}`)}`;
+function bearerAuth(token: string): string {
+  return `Bearer ${token}`;
+}
+
+/**
+ * Builds the query string for a list call.
+ *
+ * `visibility` goes as one comma-separated value (`?visibility=public,private`):
+ * the API reads a single occurrence of the key, so repeating it silently
+ * dropped every value but the first.
+ */
+function buildListQuery(
+  params: ListPageParams & { visibility?: string[] },
+): string {
+  const search = new URLSearchParams();
+  if (params.visibility && params.visibility.length > 0) {
+    search.set("visibility", params.visibility.join(","));
+  }
+  if (params.page !== undefined) search.set("page", String(params.page));
+  if (params.limit !== undefined) search.set("limit", String(params.limit));
+  if (params.after) search.set("after", params.after);
+  const qs = search.toString();
+  return qs ? `?${qs}` : "";
+}
+
+/** Parses the error envelope (or synthesises one) into a throwable error. */
+function toApiError(
+  payload: unknown,
+  res: Response,
+  fallbackMessage: string,
+): SentilisApiError {
+  const envelope = (payload as ApiError | undefined)?.error;
+  const retryAfterHeader = res.headers.get("Retry-After");
+  const retryAfter = retryAfterHeader ? Number(retryAfterHeader) : undefined;
+  return new SentilisApiError(
+    envelope?.code ?? "UNKNOWN",
+    envelope?.message || fallbackMessage,
+    envelope?.status ?? res.status,
+    Number.isFinite(retryAfter) ? retryAfter : undefined,
+  );
 }
 
 export interface RestClientOptions {
@@ -265,7 +331,7 @@ export class RestClient {
       method,
       headers: {
         ...this.extraHeaders,
-        Authorization: basicAuth(this.token),
+        Authorization: bearerAuth(this.token),
         "Content-Type": "application/json",
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -282,9 +348,10 @@ export class RestClient {
     }
 
     if (!res.ok || "error" in (json as object)) {
-      const err = (json as ApiError).error;
-      throw new Error(
-        err?.message ?? `Request failed with status ${res.status}`,
+      throw toApiError(
+        json,
+        res,
+        `Request failed with status ${res.status}`,
       );
     }
 
@@ -317,7 +384,7 @@ export class RestClient {
       method: "POST",
       headers: {
         ...this.extraHeaders,
-        Authorization: basicAuth(this.token),
+        Authorization: bearerAuth(this.token),
         // Content-Type is intentionally omitted: fetch sets
         // "multipart/form-data; boundary=..." automatically with the correct boundary.
       },
@@ -341,10 +408,10 @@ export class RestClient {
     }
 
     if (!res.ok || "error" in (json as object)) {
-      const err = (json as ApiError).error;
-      throw new Error(
-        err?.message ??
-          `Upload failed with status ${res.status}: ${text.trim()}`,
+      throw toApiError(
+        json,
+        res,
+        `Upload failed with status ${res.status}: ${text.trim()}`,
       );
     }
 
@@ -359,16 +426,10 @@ export class RestClient {
   }
 
   async listPress(params: PressListParams = {}): Promise<PressListResponse> {
-    const search = new URLSearchParams();
-    if (params.visibility && params.visibility.length > 0) {
-      for (const v of params.visibility) {
-        search.append("visibility", v);
-      }
-    }
-    if (params.page !== undefined) search.set("page", String(params.page));
-    if (params.limit !== undefined) search.set("limit", String(params.limit));
-    const path = `${PRESS_ENDPOINT}?${search.toString()}`;
-    return this.request<PressListResponse>("GET", path);
+    return this.request<PressListResponse>(
+      "GET",
+      `${PRESS_ENDPOINT}${buildListQuery(params)}`,
+    );
   }
 
   async getPress(id: string): Promise<PressInfoResponse> {
@@ -395,12 +456,10 @@ export class RestClient {
   async listProduct(
     params: ProductListParams = {},
   ): Promise<ProductListResponse> {
-    const search = new URLSearchParams();
-    if (params.page !== undefined) search.set("page", String(params.page));
-    if (params.limit !== undefined) search.set("limit", String(params.limit));
-    const qs = search.toString();
-    const path = qs ? `${MARKET_ENDPOINT}?${qs}` : MARKET_ENDPOINT;
-    return this.request<ProductListResponse>("GET", path);
+    return this.request<ProductListResponse>(
+      "GET",
+      `${MARKET_ENDPOINT}${buildListQuery(params)}`,
+    );
   }
 
   async removeProduct(id: string): Promise<ProductRemoveResponse> {
@@ -425,17 +484,10 @@ export class RestClient {
   }
 
   async listBio(params: BioListParams = {}): Promise<BioListResponse> {
-    const search = new URLSearchParams();
-    if (params.visibility && params.visibility.length > 0) {
-      for (const v of params.visibility) {
-        search.append("visibility", v);
-      }
-    }
-    if (params.page !== undefined) search.set("page", String(params.page));
-    if (params.limit !== undefined) search.set("limit", String(params.limit));
-    const qs = search.toString();
-    const path = qs ? `${BIO_ENDPOINT}?${qs}` : BIO_ENDPOINT;
-    return this.request<BioListResponse>("GET", path);
+    return this.request<BioListResponse>(
+      "GET",
+      `${BIO_ENDPOINT}${buildListQuery(params)}`,
+    );
   }
 
   async getBio(id: string): Promise<BioInfoResponse> {
@@ -467,7 +519,7 @@ export async function validateToken(
     method: "GET",
     headers: {
       ...(options.headers ?? {}),
-      Authorization: basicAuth(token),
+      Authorization: bearerAuth(token),
     },
   });
 
@@ -482,9 +534,10 @@ export async function validateToken(
   }
 
   if (!res.ok || "error" in (json as object)) {
-    const err = (json as ApiError).error;
-    throw new Error(
-      err?.message ?? `Token validation failed with status ${res.status}`,
+    throw toApiError(
+      json,
+      res,
+      `Token validation failed with status ${res.status}`,
     );
   }
 
