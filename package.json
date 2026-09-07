@@ -1,12 +1,65 @@
 {
   "name": "@sentilis/cli",
-  "version": "1.1.0",
-  "description": "Sentilis CLI",
-  "license": "MIT",
+  "version": "2.0.0",
+  "description": "Sentilis CLI and isomorphic TypeScript SDK — publish Markdown bio, press and market content to Sentilis.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
   "bin": {
     "sentilis": "dist/index.js"
   },
-  "type": "module",
+  "main": "dist/sdk/api.js",
+  "types": "dist/sdk/api.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/sdk/api.d.ts",
+      "import": "./dist/sdk/api.js",
+      "default": "./dist/sdk/api.js"
+    },
+    "./node": {
+      "types": "./dist/sdk/node.d.ts",
+      "import": "./dist/sdk/node.js",
+      "default": "./dist/sdk/node.js"
+    },
+    "./press": {
+      "types": "./dist/sdk/press/index.d.ts",
+      "import": "./dist/sdk/press/index.js",
+      "default": "./dist/sdk/press/index.js"
+    },
+    "./market": {
+      "types": "./dist/sdk/market/index.d.ts",
+      "import": "./dist/sdk/market/index.js",
+      "default": "./dist/sdk/market/index.js"
+    },
+    "./bio": {
+      "types": "./dist/sdk/bio/index.d.ts",
+      "import": "./dist/sdk/bio/index.js",
+      "default": "./dist/sdk/bio/index.js"
+    },
+    "./workspace": {
+      "types": "./dist/sdk/workspace/index.d.ts",
+      "import": "./dist/sdk/workspace/index.js",
+      "default": "./dist/sdk/workspace/index.js"
+    },
+    "./press/markdown": {
+      "types": "./dist/sdk/press/markdown.d.ts",
+      "import": "./dist/sdk/press/markdown.js",
+      "default": "./dist/sdk/press/markdown.js"
+    },
+    "./market/markdown": {
+      "types": "./dist/sdk/market/markdown.d.ts",
+      "import": "./dist/sdk/market/markdown.js",
+      "default": "./dist/sdk/market/markdown.js"
+    },
+    "./bio/markdown": {
+      "types": "./dist/sdk/bio/markdown.d.ts",
+      "import": "./dist/sdk/bio/markdown.js",
+      "default": "./dist/sdk/bio/markdown.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "./dist/index.js"
+  ],
   "files": [
     "dist",
     "README.md",
@@ -14,8 +67,12 @@
   ],
   "scripts": {
     "build": "tsc",
+    "check:sdk": "tsc -p tsconfig.sdk.json",
+    "check:dist": "node scripts/check-sdk-boundary.mjs",
+    "verify": "npm run build && npm run check:sdk && npm run check:dist",
     "start": "node dist/index.js",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run verify"
   },
   "dependencies": {
     "citty": "^0.2.1"
@@ -24,5 +81,27 @@
     "@types/node": "^22.13.4",
     "tsx": "^4.21.0",
     "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sentilis",
+    "cli",
+    "sdk",
+    "markdown",
+    "bio",
+    "press",
+    "market",
+    "isomorphic",
+    "publishing"
+  ],
+  "homepage": "https://about.sentilis.me",
+  "bugs": {
+    "url": "https://github.com/sentilis/cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sentilis/cli.git"
   }
 }
