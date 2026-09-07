@@ -1,0 +1,27 @@
+{
+  // Isomorphism guard for the SDK subtree.
+  //
+  // src/sdk must run unchanged in Node, browsers, Workers and Obsidian
+  // mobile, so it may not touch Node APIs. Dropping @types/node turns any
+  // `node:*` import — or any use of `process`, `Buffer`, `__dirname` — into
+  // a compile error instead of something that only fails on a phone.
+  //
+  // src/sdk/node.ts is the single sanctioned exception (the NodeFileSystem
+  // adapter, published as the "./node" subpath). Nothing else in the
+  // subtree imports it, so excluding it here genuinely keeps it out of the
+  // program.
+  //
+  // DOM (+DOM.Iterable, for FormData.entries) is here for fetch, FormData,
+  // Blob and URLSearchParams — all the browser surface the SDK uses. Do NOT
+  // add DOM to the main tsconfig: the CLI has no business seeing browser
+  // globals.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "types": [],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+  },
+  "include": ["src/sdk"],
+  "exclude": ["src/sdk/node.ts"]
+}

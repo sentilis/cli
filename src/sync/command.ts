@@ -1,11 +1,11 @@
 import { defineCommand } from "citty";
-import { formatIssue, type ValidationIssue } from "@sentilis/core";
-import { discoverWorkspace, type WorkspaceEntry } from "@sentilis/core/workspace";
-import { createBio, publishBio } from "@sentilis/core/bio";
-import { createPress, publishPress } from "@sentilis/core/press";
-import { createProduct, publishProduct } from "@sentilis/core/market";
-import { NodeFileSystem } from "@sentilis/core/node";
-import type { RestClient } from "@sentilis/core";
+import { formatIssue, type ValidationIssue } from "../sdk/errors.js";
+import { discoverWorkspace, type WorkspaceEntry } from "../sdk/workspace/index.js";
+import { createBio, publishBio } from "../sdk/bio/index.js";
+import { createPress, publishPress } from "../sdk/press/index.js";
+import { createProduct, publishProduct } from "../sdk/market/index.js";
+import { NodeFileSystem } from "../sdk/node.js";
+import type { RestClient } from "../sdk/client.js";
 
 const fs = new NodeFileSystem();
 

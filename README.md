@@ -17,7 +17,9 @@
 
 ## Description
 
-The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. Built on top of [`@sentilis/core`](https://www.npmjs.com/package/@sentilis/core), it enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
+The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. It enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
+
+The package also ships the isomorphic TypeScript SDK the CLI is built on, so you can drive the same validation and publishing logic from your own code. As of v2 this SDK lives here; it was previously published separately as `@sentilis/core`, which is now retired. See [Use as a library](#use-as-a-library).
 
 ## Installation
 
@@ -138,6 +140,38 @@ Exit codes are pipeline-friendly: `0` only when every requested step succeeded; 
 
 > Looking for ready-made starting points? Browse the [Awesome Templates for Bio, Market & Press](https://sentilis.me/en/press/awesome-templates-bio-market-press-6a0b2e43550ca18de60a7d8a).
 
+## Use as a library
+
+Everything the CLI does is available programmatically. Install the package and import from it directly:
+
+```ts
+import { RestClient } from "@sentilis/cli";
+import { createPress, publishPress } from "@sentilis/cli/press";
+import { NodeFileSystem } from "@sentilis/cli/node";
+
+const fs = new NodeFileSystem();
+const client = new RestClient(process.env.SENTILIS_TOKEN!);
+
+const entry = await createPress(fs, "./press/my-article");
+await publishPress(client, fs, entry);
+```
+
+### Entry points
+
+| Import | Contents |
+| --- | --- |
+| `@sentilis/cli` | `RestClient`, `validateToken`, `formatIssue`, `SentilisError`, the `FileSystem` adapter interface, path helpers, and the `press` / `market` / `bio` / `workspace` namespaces |
+| `@sentilis/cli/press` | `createPress`, `publishPress`, press types and markdown helpers |
+| `@sentilis/cli/market` | `createProduct`, `publishProduct`, product types and markdown helpers |
+| `@sentilis/cli/bio` | `createBio`, `publishBio`, bio types and markdown helpers |
+| `@sentilis/cli/workspace` | `discoverWorkspace` — the walker behind `sentilis sync` |
+| `@sentilis/cli/press/markdown`, `@sentilis/cli/market/markdown`, `@sentilis/cli/bio/markdown` | frontmatter parsing and validation helpers on their own |
+| `@sentilis/cli/node` | `NodeFileSystem`, the Node-backed `FileSystem` adapter |
+
+**Everything except `./node` is isomorphic** — no Node-specific imports, so it runs unchanged in browsers, Workers, Deno, Bun and Obsidian mobile. Supply your own `FileSystem` adapter in those environments; `./node` is the one entry point that requires a Node runtime. This is enforced in CI, not just intended.
+
+Debug logging is written to stderr when `DEBUG=1`, and is honoured only where a `process` global exists.
+
 ## Stay in touch
 - Website - [https://about.sentilis.me](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-website)
 - X - [https://x.com/SentilisMe](https://x.com/SentilisMe)
@@ -148,4 +182,4 @@ For issues and feature requests, please use the GitHub Issues page.
 
 ## License
 
-Sentilis CLI is [MIT licensed](./LICENSE). See the [Contributing Guide](./CONTRIBUTING.md) for more details.
+Sentilis CLI is licensed under the [GNU Affero General Public License v3.0](./LICENSE). See the [Contributing Guide](./CONTRIBUTING.md) for more details.

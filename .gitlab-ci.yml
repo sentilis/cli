@@ -1,9 +1,18 @@
 # GitLab CI/CD for @sentilis/cli
 #
+# This package ships two things from one tree: the `sentilis` binary
+# (src/, Node APIs allowed) and the isomorphic SDK (src/sdk/, published as
+# the "." and "./press|market|bio|workspace|node" subpaths). The SDK is
+# bundled into the Obsidian plugin, which runs on mobile, so keeping Node
+# code out of it is a release-blocking invariant, not a style preference.
+#
 # Pipelines:
-#   • Every push to main and every MR → `build` job runs the type-check,
-#     compiles the CLI, and smoke-tests it across the supported Node matrix.
-#   • Tag push matching `v*` (e.g. v0.5.1) → `publish` job pushes to npm.
+#   • Every push to main and every MR → `build` job type-checks, compiles,
+#     enforces the SDK boundary, and smoke-tests the CLI across the
+#     supported Node matrix.
+#   • Tag push matching `v*` (e.g. v2.0.1) → `publish` job pushes to npm.
+#     Prerelease tags (v2.0.0-rc.1) publish under the `next` dist-tag so
+#     they never move `latest`.
 #
 # Required CI/CD variables (Project → Settings → CI/CD → Variables):
 #   • NPM_TOKEN — npm automation token with publish rights. Mark "Masked"
@@ -25,7 +34,7 @@ default:
     - npm install --no-audit --no-fund --cache .npm --prefer-offline
 
 # ────────────────────────────────────────────────────────────────
-# Build matrix: validate the CLI against every supported Node.
+# Build matrix: validate the package against every supported Node.
 # ────────────────────────────────────────────────────────────────
 build:
   stage: build
@@ -37,13 +46,35 @@ build:
     - node --version
     - npm run build
     - |
+      echo "Type-checking the SDK subtree with no Node types…"
+      npm run check:sdk
+    - |
+      echo "Checking the SDK boundary in dist/…"
+      npm run check:dist
+    - |
       echo "Smoke-testing CLI…"
       node dist/index.js --help > /dev/null
-      node dist/index.js market --help > /dev/null
-      node dist/index.js press  --help > /dev/null
-      node dist/index.js bio    --help > /dev/null
       node dist/index.js auth   --help > /dev/null
+      node dist/index.js bio    --help > /dev/null
+      node dist/index.js press  --help > /dev/null
+      node dist/index.js market --help > /dev/null
+      node dist/index.js sync   --help > /dev/null
       echo "OK — all subcommands respond"
+    - |
+      echo "Dry-running the bundled examples…"
+      # No auth needed: every push command returns from its --dry-run
+      # branch before it reaches requireAuth(). These fixtures exercise
+      # the whole parse/validate/walk surface, which is what an import
+      # rewrite is most likely to silently mis-wire.
+      node dist/index.js bio    push examples/personal-brand/bio                       --dry-run > /dev/null
+      node dist/index.js bio    push examples/entrepreneur/bio                         --dry-run > /dev/null
+      node dist/index.js press  push examples/entrepreneur/press/funding-round         --dry-run > /dev/null
+      node dist/index.js press  push examples/personal-brand/press/productivity-tools  --dry-run > /dev/null
+      node dist/index.js market push examples/entrepreneur/market/pitch-deck           --dry-run > /dev/null
+      node dist/index.js market push examples/personal-brand/market/coaching-session   --dry-run > /dev/null
+      node dist/index.js sync        examples/entrepreneur                             --dry-run > /dev/null
+      node dist/index.js sync        examples/personal-brand                           --dry-run > /dev/null
+      echo "OK — fixtures validate"
   artifacts:
     when: on_success
     expire_in: 1 week
@@ -57,6 +88,7 @@ build:
 # ────────────────────────────────────────────────────────────────
 # Publish: runs only on `v*` tag pushes. Reuses the Node 22 artifact
 # from the build stage and validates that package.json matches the tag.
+# `prepublishOnly` re-runs the full verify before the tarball is cut.
 # ────────────────────────────────────────────────────────────────
 publish:
   stage: publish
@@ -74,7 +106,12 @@ publish:
         echo "ERROR: package.json version ($PKG_VERSION) does not match tag (v$TAG_VERSION)"
         exit 1
       fi
-    - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-    - npm publish --access public
+      case "$TAG_VERSION" in
+        *-*) NPM_TAG="next" ;;
+        *)   NPM_TAG="latest" ;;
+      esac
+      echo "Publishing $PKG_VERSION under dist-tag $NPM_TAG"
+      echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      npm publish --access public --tag "$NPM_TAG"
   rules:
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(-[\w.]+)?$/

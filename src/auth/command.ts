@@ -18,7 +18,7 @@ export default defineCommand({
         },
       },
       async run({ args }) {
-        const { validateToken } = await import("@sentilis/core");
+        const { validateToken } = await import("../sdk/client.js");
         const { login, getConfigPath } = await import("../config.js");
         const { buildClientHeaders } = await import("../client.js");
         try {

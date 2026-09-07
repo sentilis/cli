@@ -1,7 +1,7 @@
 import { defineCommand } from "citty";
-import { formatIssue } from "@sentilis/core";
-import { createPress, publishPress } from "@sentilis/core/press";
-import { NodeFileSystem } from "@sentilis/core/node";
+import { formatIssue } from "../sdk/errors.js";
+import { createPress, publishPress } from "../sdk/press/index.js";
+import { NodeFileSystem } from "../sdk/node.js";
 
 function reportError(err: unknown): never {
   const e = err as Error;

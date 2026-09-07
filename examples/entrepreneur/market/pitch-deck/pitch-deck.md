@@ -7,7 +7,7 @@ status: published
 visibility: public
 price: 49.00
 currency: USD
-attachment: "deck-template.zip"
+attachment: "./attachments/deck-template.zip"
 ---
 
 # Winning Startup Pitch Deck Template

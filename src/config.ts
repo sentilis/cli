@@ -1,7 +1,7 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import type { Config, Profile } from "@sentilis/core";
+import type { Config, Profile } from "./sdk/types.js";
 
 const CONFIG_DIR = join(homedir(), ".sentilis");
 const CONFIG_FILE = join(CONFIG_DIR, "config.json");
