@@ -64,6 +64,9 @@ export default defineCommand({
               `Dry run OK — ${result.hidden.length + 1} file(s) would be pushed.`,
             );
             console.log(`  Main:     ${metadata.name} (slug: ${metadata.slug})`);
+            if (metadata.cover) {
+              console.log(`  Cover:    ${metadata.cover}`);
+            }
             if (result.hidden.length > 0) {
               console.log(
                 `  Children: ${result.hidden
@@ -93,6 +96,9 @@ export default defineCommand({
           console.log(`  Slug:     ${res.data.slug ?? metadata.slug}`);
           console.log(`  Status:   ${metadata.status}`);
           console.log(`  Category: ${metadata.category ?? "(none)"}`);
+          if (metadata.cover) {
+            console.log(`  Cover:    ${metadata.cover}`);
+          }
           if (metadata.tags.length > 0) {
             console.log(`  Tags:     ${metadata.tags.join(", ")}`);
           }
@@ -115,7 +121,7 @@ export default defineCommand({
         visibility: {
           type: "string",
           description:
-            "Filter by visibility (public, private, protected, prime). Comma-separated or multiple flags.",
+            "Filter by visibility (public, private, prime). Comma-separated or multiple flags.",
           default: "public",
         },
         page: {
@@ -203,6 +209,7 @@ export default defineCommand({
           console.log(`  Slug:       ${p.slug}`);
           console.log(`  Status:     ${p.status}`);
           console.log(`  Visibility: ${p.visibility}`);
+          if (p.coverUrl) console.log(`  Cover:      ${p.coverUrl}`);
           if (p.category) console.log(`  Category:   ${p.category}`);
           if (p.tags && p.tags.length > 0) {
             console.log(`  Tags:       ${p.tags.join(", ")}`);

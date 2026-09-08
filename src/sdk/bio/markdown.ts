@@ -1,5 +1,6 @@
 import type { BioMetadata, BioSocialLinks } from "./types.js";
 import type { LifecycleStatus, LifecycleVisibility } from "../types.js";
+import { isValidVisibility } from "../types.js";
 import type { ValidationIssue } from "../errors.js";
 import {
   splitFrontmatter,
@@ -34,15 +35,6 @@ type SocialKey = (typeof SOCIAL_KEYS)[number];
 
 function isValidStatus(s: string): s is LifecycleStatus {
   return s === "draft" || s === "published" || s === "archived";
-}
-
-function isValidVisibility(s: string): s is LifecycleVisibility {
-  return (
-    s === "public" ||
-    s === "protected" ||
-    s === "private" ||
-    s === "prime"
-  );
 }
 
 function emptyToNull(value: string): string | null {
@@ -186,13 +178,11 @@ export function buildMetadata(input: BuildMetadataInput): {
     partial,
     "password",
   );
+  // A password is optional: `private` alone hides the bio, and adding a
+  // password turns it into a shareable page behind the unlock gate.
   const password = passwordExplicit
     ? (partial.password ?? null)
     : (input.passwordFallback ?? null);
-
-  if (visibility === "protected" && !password) {
-    issues.push({ code: "PROTECTED_NEEDS_PASSWORD" });
-  }
 
   const social: BioSocialLinks = {
     website: partial.social?.website ?? null,

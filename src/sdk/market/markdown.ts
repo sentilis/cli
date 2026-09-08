@@ -3,6 +3,7 @@ import type {
   ProductType,
 } from "./types.js";
 import type { LifecycleStatus, LifecycleVisibility } from "../types.js";
+import { isValidVisibility } from "../types.js";
 import type { ValidationIssue } from "../errors.js";
 import {
   splitFrontmatter,
@@ -39,15 +40,6 @@ export function parseFrontmatter(raw: string): {
 
 function isValidStatus(s: string): s is LifecycleStatus {
   return s === "draft" || s === "published" || s === "archived";
-}
-
-function isValidVisibility(s: string): s is LifecycleVisibility {
-  return (
-    s === "public" ||
-    s === "protected" ||
-    s === "private" ||
-    s === "prime"
-  );
 }
 
 function isValidType(s: string): s is ProductType {

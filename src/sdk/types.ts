@@ -8,4 +8,15 @@ export interface Config {
 }
 
 export type LifecycleStatus = "draft" | "published" | "archived";
-export type LifecycleVisibility = "public" | "private" | "protected" | "prime";
+
+/**
+ * `private` is the single "not public" value: the entry stays out of public
+ * listings and is not reachable by direct URL. A bio additionally accepts a
+ * `password`, which turns `private` into a shareable, unlockable page.
+ */
+export const VISIBILITY_VALUES = ["public", "private", "prime"] as const;
+export type LifecycleVisibility = (typeof VISIBILITY_VALUES)[number];
+
+export function isValidVisibility(s: string): s is LifecycleVisibility {
+  return (VISIBILITY_VALUES as readonly string[]).includes(s);
+}

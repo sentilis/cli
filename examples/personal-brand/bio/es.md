@@ -2,7 +2,7 @@
 name: Jane Doe
 language: es
 status: published
-visibility: protected
+visibility: private
 role: Staff Engineer y Technical Coach
 location: Mexico City, MX
 password: 1232

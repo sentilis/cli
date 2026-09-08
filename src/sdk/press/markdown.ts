@@ -1,5 +1,6 @@
 import type { PressMetadata } from "./types.js";
 import type { LifecycleStatus, LifecycleVisibility } from "../types.js";
+import { isValidVisibility } from "../types.js";
 import type { ValidationIssue } from "../errors.js";
 import {
   splitFrontmatter,
@@ -71,7 +72,10 @@ function parseSimpleYaml(yaml: string): ParsedYaml {
             params: { value: rawValue },
           });
         break;
-      case "cover": {
+      // `image` is accepted as an alias: the frontmatter reference documented
+      // it before the key settled on `cover`.
+      case "cover":
+      case "image": {
         const value = unquote(rawValue);
         result.cover = value === "" || value === "null" ? null : value;
         break;
@@ -99,15 +103,6 @@ function parseCsvList(rawValue: string): string[] {
 
 function isValidStatus(s: string): s is LifecycleStatus {
   return s === "draft" || s === "published" || s === "archived";
-}
-
-function isValidVisibility(s: string): s is LifecycleVisibility {
-  return (
-    s === "public" ||
-    s === "protected" ||
-    s === "private" ||
-    s === "prime"
-  );
 }
 
 export interface BuildMetadataInput {

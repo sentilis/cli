@@ -119,7 +119,7 @@ export default defineCommand({
         visibility: {
           type: "string",
           description:
-            "Filter by visibility (public, private, protected, prime). Comma-separated or multiple flags.",
+            "Filter by visibility (public, private, prime). Comma-separated or multiple flags.",
           default: "public",
         },
         page: {

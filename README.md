@@ -84,7 +84,7 @@ Manage your Sentilis Press entries and articles. New to Press? Read [What is a P
     $ sentilis press push ./examples/bigtech/press/scaling-10m-rpm
     ```
     > **Cover image:** if no `cover:` field is set in frontmatter, the CLI auto-detects `./attachments/cover.{png,jpg,jpeg,webp}` as the cover.
-*   **List:** View your press entries. Use `--visibility` to filter by access level (e.g., `public`, `private`, `protected`, `prime`). Defaults to `public`. Multiple values can be comma-separated.
+*   **List:** View your press entries. Use `--visibility` to filter by access level (e.g., `public`, `private`, `prime`). Defaults to `public`. Multiple values can be comma-separated.
     ```bash
     $ sentilis press list --visibility=public,private
     ```

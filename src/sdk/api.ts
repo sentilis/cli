@@ -38,6 +38,7 @@ export type {
   LifecycleStatus,
   LifecycleVisibility,
 } from "./types.js";
+export { VISIBILITY_VALUES, isValidVisibility } from "./types.js";
 
 export {
   formatIssue,

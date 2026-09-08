@@ -32,7 +32,6 @@ export type ValidationCode =
   // ---- Lifecycle ----
   | "INVALID_STATUS"
   | "INVALID_VISIBILITY"
-  | "PROTECTED_NEEDS_PASSWORD"
   // ---- Links in body ----
   | "LINK_POINTS_TO_MEDIA"
   | "LINK_POINTS_TO_LOCAL_MD"
@@ -120,9 +119,7 @@ export function formatIssue(issue: ValidationIssue): string {
     case "INVALID_STATUS":
       return `Invalid status "${p.value}": must be one of draft, published, archived.`;
     case "INVALID_VISIBILITY":
-      return `Invalid visibility "${p.value}": must be one of public, protected, private, prime.`;
-    case "PROTECTED_NEEDS_PASSWORD":
-      return `Bio with visibility=protected requires a "password" field in the frontmatter.`;
+      return `Invalid visibility "${p.value}": must be one of public, private, prime.`;
     case "LINK_POINTS_TO_MEDIA":
       return `Link "${p.alt}" points to a media file (${p.href}). Only web page links are allowed.`;
     case "LINK_POINTS_TO_LOCAL_MD":

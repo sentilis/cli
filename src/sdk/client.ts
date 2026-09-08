@@ -128,6 +128,7 @@ export interface PressInfoResponse {
     category: string | null;
     status: string;
     visibility: string;
+    coverUrl?: string | null;
     tags: string[];
     authors: string[];
     url: string;
