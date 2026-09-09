@@ -73,14 +73,11 @@ export default defineCommand({
             if (metadata.category) {
               console.log(`  Category: ${metadata.category}`);
             }
-            if (metadata.image) {
-              console.log(`  Image:    ${metadata.image}`);
+            if (metadata.cover) {
+              console.log(`  Cover:    ${metadata.cover}`);
             }
             if (metadata.attachment) {
               console.log(`  Attach:   ${metadata.attachment}`);
-            }
-            if (metadata.pressUrl) {
-              console.log(`  Press:    ${metadata.pressUrl}`);
             }
           } catch (err) {
             reportError(err);
@@ -110,6 +107,9 @@ export default defineCommand({
           );
           if (metadata.category) {
             console.log(`  Category: ${metadata.category}`);
+          }
+          if (metadata.cover) {
+            console.log(`  Cover:    ${metadata.cover}`);
           }
         } catch (err) {
           reportError(err);

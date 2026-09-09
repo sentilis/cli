@@ -3,7 +3,19 @@ import type {
   ProductType,
 } from "./types.js";
 import type { LifecycleStatus, LifecycleVisibility } from "../types.js";
-import { isValidVisibility } from "../types.js";
+import { VISIBILITY_VALUES } from "../types.js";
+
+/**
+ * A product is either in the public catalog or hidden. `prime` is a press /
+ * bio concept and has no meaning for a listing.
+ */
+export const PRODUCT_VISIBILITY_VALUES = VISIBILITY_VALUES.filter(
+  (v) => v !== "prime",
+);
+
+function isValidProductVisibility(s: string): s is LifecycleVisibility {
+  return (PRODUCT_VISIBILITY_VALUES as readonly string[]).includes(s);
+}
 import type { ValidationIssue } from "../errors.js";
 import {
   splitFrontmatter,
@@ -85,11 +97,11 @@ function parseSimpleYaml(yaml: string): ParsedYaml {
         else issues.push({ code: "INVALID_STATUS", params: { value: rawValue } });
         break;
       case "visibility":
-        if (isValidVisibility(rawValue)) result.visibility = rawValue;
+        if (isValidProductVisibility(rawValue)) result.visibility = rawValue;
         else
           issues.push({
             code: "INVALID_VISIBILITY",
-            params: { value: rawValue },
+            params: { value: rawValue, allowed: PRODUCT_VISIBILITY_VALUES.join(", ") },
           });
         break;
       case "price": {
@@ -107,19 +119,14 @@ function parseSimpleYaml(yaml: string): ParsedYaml {
         result.currency = value === "" || value === "null" ? null : value;
         break;
       }
-      case "image": {
+      case "cover": {
         const value = unquote(rawValue);
-        result.image = value === "" || value === "null" ? null : value;
+        result.cover = value === "" || value === "null" ? null : value;
         break;
       }
       case "attachment": {
         const value = unquote(rawValue);
         result.attachment = value === "" || value === "null" ? null : value;
-        break;
-      }
-      case "pressUrl": {
-        const value = unquote(rawValue);
-        result.pressUrl = value === "" || value === "null" ? null : value;
         break;
       }
       case "description": {
@@ -136,7 +143,7 @@ function parseSimpleYaml(yaml: string): ParsedYaml {
 export interface BuildMetadataInput {
   partial: Partial<ProductMetadata>;
   inferredName: string;
-  autoDetected?: { image: string | null; attachment: string | null };
+  autoDetected?: { cover: string | null; attachment: string | null };
 }
 
 export function buildMetadata(input: BuildMetadataInput): {
@@ -146,7 +153,7 @@ export function buildMetadata(input: BuildMetadataInput): {
   const {
     partial,
     inferredName,
-    autoDetected = { image: null, attachment: null },
+    autoDetected = { cover: null, attachment: null },
   } = input;
   const issues: ValidationIssue[] = [];
 
@@ -170,7 +177,7 @@ export function buildMetadata(input: BuildMetadataInput): {
     issues.push({ code: "MISSING_CURRENCY", params: { price } });
   }
 
-  const image = partial.image ?? autoDetected.image;
+  const cover = partial.cover ?? autoDetected.cover;
   const attachment = partial.attachment ?? autoDetected.attachment;
 
   if (kind === "digital" && !attachment) {
@@ -178,11 +185,6 @@ export function buildMetadata(input: BuildMetadataInput): {
       code: "DIGITAL_NEEDS_ATTACHMENT",
       params: { attachmentsDir: "attachments" },
     });
-  }
-
-  const pressUrl = partial.pressUrl ?? null;
-  if (pressUrl && !/^https?:\/\//.test(pressUrl)) {
-    issues.push({ code: "INVALID_PRESS_URL", params: { value: pressUrl } });
   }
 
   const metadata: ProductMetadata = {
@@ -194,9 +196,8 @@ export function buildMetadata(input: BuildMetadataInput): {
     visibility: partial.visibility ?? "public",
     price,
     currency,
-    image,
+    cover,
     attachment,
-    pressUrl,
     description: partial.description ?? null,
   };
   return { metadata, issues };

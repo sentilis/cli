@@ -31,7 +31,7 @@ function basenameOf(p: string): string {
  *     (e.g. `./attachments/foo.png`).
  *
  * `assets` must include every local (non-remote) ref from
- * `metadata.image`, `metadata.attachment`, `images`, and `videos`.
+ * `metadata.cover`, `metadata.attachment`, `images`, and `videos`.
  */
 export function buildProductFormData(
   upload: ProductUpload,

@@ -22,7 +22,6 @@ export type ValidationCode =
   | "LINK_NOT_FOUND"
   // ---- Auto-detection ----
   | "MULTIPLE_COVER_CANDIDATES"
-  | "MULTIPLE_IMAGE_CANDIDATES"
   | "MULTIPLE_AVATAR_CANDIDATES"
   // ---- Slug / tag ----
   | "INVALID_SLUG_FORMAT"
@@ -41,7 +40,6 @@ export type ValidationCode =
   | "INVALID_PRICE_NEGATIVE"
   | "MISSING_CURRENCY"
   | "DIGITAL_NEEDS_ATTACHMENT"
-  | "INVALID_PRESS_URL"
   | "PRODUCT_FIELD_MUST_BE_LOCAL"
   // ---- Bio ----
   | "INVALID_LANGUAGE"
@@ -104,8 +102,6 @@ export function formatIssue(issue: ValidationIssue): string {
       return `Linked file not found: "${p.ref}" referenced in ${issue.file ?? p.file}`;
     case "MULTIPLE_COVER_CANDIDATES":
       return `Multiple cover candidates found in ./${p.attachmentsDir}/: ${p.matches}. Set the "cover" field explicitly to pick one.`;
-    case "MULTIPLE_IMAGE_CANDIDATES":
-      return `Multiple image candidates found in ./${p.attachmentsDir}/: ${p.matches}. Set the "image" field explicitly to pick one.`;
     case "MULTIPLE_AVATAR_CANDIDATES":
       return `Multiple avatar candidates found in ./${p.attachmentsDir}/: ${p.matches}. Set the "avatar" field explicitly to pick one.`;
     case "INVALID_SLUG_FORMAT":
@@ -119,7 +115,7 @@ export function formatIssue(issue: ValidationIssue): string {
     case "INVALID_STATUS":
       return `Invalid status "${p.value}": must be one of draft, published, archived.`;
     case "INVALID_VISIBILITY":
-      return `Invalid visibility "${p.value}": must be one of public, private, prime.`;
+      return `Invalid visibility "${p.value}": must be one of ${p.allowed ?? "public, private, prime"}.`;
     case "LINK_POINTS_TO_MEDIA":
       return `Link "${p.alt}" points to a media file (${p.href}). Only web page links are allowed.`;
     case "LINK_POINTS_TO_LOCAL_MD":
@@ -134,8 +130,6 @@ export function formatIssue(issue: ValidationIssue): string {
       return `Product has price ${p.price} but no currency. Set "currency" in the frontmatter (e.g. USD).`;
     case "DIGITAL_NEEDS_ATTACHMENT":
       return `Product of kind "digital" requires an attachment. Add an "attachment" field in the frontmatter or drop a file at ./${p.attachmentsDir}/attachment.zip.`;
-    case "INVALID_PRESS_URL":
-      return `Invalid pressUrl "${p.value}": must be an absolute http(s):// URL.`;
     case "PRODUCT_FIELD_MUST_BE_LOCAL":
       return `Field "${p.field}" must be a local path inside ./${p.attachmentsDir}/ (got "${p.value}").`;
     case "INVALID_LANGUAGE":

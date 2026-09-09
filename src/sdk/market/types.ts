@@ -15,9 +15,8 @@ export interface ProductMetadata {
   visibility: LifecycleVisibility;
   price: number;
   currency: string | null;
-  image: string | null;
+  cover: string | null;
   attachment: string | null;
-  pressUrl: string | null;
   description: string | null;
 }
 

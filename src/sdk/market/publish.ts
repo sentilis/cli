@@ -23,7 +23,7 @@ async function collectAssets(
     assets.set(ref, data);
   };
 
-  if (product.metadata.image) await addRef(product.metadata.image);
+  if (product.metadata.cover) await addRef(product.metadata.cover);
   if (product.metadata.attachment) await addRef(product.metadata.attachment);
   for (const img of product.images) await addRef(img.src);
   for (const video of product.videos) await addRef(video.src);

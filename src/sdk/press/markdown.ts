@@ -72,10 +72,7 @@ function parseSimpleYaml(yaml: string): ParsedYaml {
             params: { value: rawValue },
           });
         break;
-      // `image` is accepted as an alias: the frontmatter reference documented
-      // it before the key settled on `cover`.
-      case "cover":
-      case "image": {
+      case "cover": {
         const value = unquote(rawValue);
         result.cover = value === "" || value === "null" ? null : value;
         break;

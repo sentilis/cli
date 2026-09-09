@@ -27,11 +27,11 @@ import type {
   ProductMetadata,
 } from "./types.js";
 
-const IMAGE_CANDIDATES = [
-  "image.png",
-  "image.jpg",
-  "image.jpeg",
-  "image.webp",
+const COVER_CANDIDATES = [
+  "cover.png",
+  "cover.jpg",
+  "cover.jpeg",
+  "cover.webp",
 ];
 const ATTACHMENT_CANDIDATES = ["attachment.zip"];
 
@@ -139,7 +139,7 @@ async function readProductFile(
 
   const autoDetected = allowAttachments
     ? await autoDetectAssets(fs, rootDir, partial, push)
-    : { image: null, attachment: null };
+    : { cover: null, attachment: null };
 
   const { metadata, issues: metaIssues } = buildMetadata({
     partial,
@@ -151,7 +151,7 @@ async function readProductFile(
   const dir = dirname(filePath);
 
   for (const [field, ref] of [
-    ["image", metadata.image] as const,
+    ["cover", metadata.cover] as const,
     ["attachment", metadata.attachment] as const,
   ]) {
     if (!ref) continue;
@@ -211,30 +211,30 @@ async function autoDetectAssets(
   rootDir: string,
   partial: Partial<ProductMetadata>,
   push: (issue: ValidationIssue) => void,
-): Promise<{ image: string | null; attachment: string | null }> {
+): Promise<{ cover: string | null; attachment: string | null }> {
   const attachmentsRoot = join(rootDir, ATTACHMENTS_DIR);
-  const out: { image: string | null; attachment: string | null } = {
-    image: null,
+  const out: { cover: string | null; attachment: string | null } = {
+    cover: null,
     attachment: null,
   };
 
-  if (partial.image === undefined) {
+  if (partial.cover === undefined) {
     const matches: string[] = [];
-    for (const candidate of IMAGE_CANDIDATES) {
+    for (const candidate of COVER_CANDIDATES) {
       if (await fs.exists(join(attachmentsRoot, candidate))) {
         matches.push(candidate);
       }
     }
     if (matches.length > 1) {
       push({
-        code: "MULTIPLE_IMAGE_CANDIDATES",
+        code: "MULTIPLE_COVER_CANDIDATES",
         params: {
           attachmentsDir: ATTACHMENTS_DIR,
           matches: matches.join(", "),
         },
       });
     } else if (matches.length === 1) {
-      out.image = `./${ATTACHMENTS_DIR}/${matches[0]}`;
+      out.cover = `./${ATTACHMENTS_DIR}/${matches[0]}`;
     }
   }
 
