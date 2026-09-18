@@ -20,3 +20,17 @@ export type LifecycleVisibility = (typeof VISIBILITY_VALUES)[number];
 export function isValidVisibility(s: string): s is LifecycleVisibility {
   return (VISIBILITY_VALUES as readonly string[]).includes(s);
 }
+
+/**
+ * Lo que puede tener una entrada del catálogo —un producto de Market o un plan
+ * de Prime—: está a la venta o está escondida. `prime` es una visibilidad de
+ * press y bio; un plan que solo vieran sus propios suscriptores sería
+ * incomprable.
+ */
+export const CATALOG_VISIBILITY_VALUES = VISIBILITY_VALUES.filter(
+  (v) => v !== "prime",
+);
+
+export function isCatalogVisibility(s: string): s is LifecycleVisibility {
+  return (CATALOG_VISIBILITY_VALUES as readonly string[]).includes(s);
+}

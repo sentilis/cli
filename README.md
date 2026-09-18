@@ -118,9 +118,53 @@ Manage your Sentilis Market products. New to Market? Read [What is Market?](http
     $ sentilis market remove <id>
     ```
 
-### 5. Sync
+### 5. Prime Commands
 
-Validate and publish every entry under a workspace directory in one shot. A workspace is a folder containing any of `bio/`, `press/`, or `market/` — typically one persona per workspace, the same layout the `examples/` directory uses. Designed for the same flow locally and in CI: install, login, run `sentilis sync`.
+Manage your Prime plans: monthly subscriptions. A plan is written like a Market
+product — a folder with one `.md` and its `attachments/`, or a single `.md` —
+with two differences: there is no `kind` and no `attachment` (a plan sells
+access, not a file), and `price` must be greater than zero with a `currency`.
+
+```markdown
+---
+name: Weekly Systems Letter
+slug: weekly-systems-letter
+category: Newsletter
+status: published
+visibility: public
+price: 9.00
+currency: USD
+interval: month
+cover: ./attachments/cover.png
+---
+
+# Weekly Systems Letter
+
+One long-form essay a week, plus the subscriber-only archive.
+```
+
+*   **Push:** Validate and publish a plan. Use `--dry-run` to validate without pushing.
+    ```bash
+    $ sentilis prime push ./prime/weekly-systems-letter
+    ```
+    Publishing still succeeds when the payment provider rejects the recurring
+    price — the command warns and the plan stays unsellable until the key is
+    widened (Products, Prices, Customers and Subscriptions).
+*   **List / info:** See your plans, their price, their subscribers, and why one is not selling.
+    ```bash
+    $ sentilis prime list
+    $ sentilis prime info <id>
+    ```
+*   **Remove:** Take the plan out of the catalogue. It does **not** cancel anyone:
+    live subscriptions keep renewing until each subscriber cancels. To stop
+    selling without touching them, push the plan again with `status: archived`.
+    ```bash
+    $ sentilis prime remove <id>
+    ```
+
+### 6. Sync
+
+Validate and publish every entry under a workspace directory in one shot. A workspace is a folder containing any of `bio/`, `press/`, `market/` or `prime/` — typically one persona per workspace, the same layout the `examples/` directory uses. Designed for the same flow locally and in CI: install, login, run `sentilis sync`.
 
 *   **Push everything (lenient, default):** Walk the workspace, validate each entry, report issues on bad ones, and publish the clean ones. Use this when partial progress is preferable.
     ```bash
@@ -160,12 +204,13 @@ await publishPress(client, fs, entry);
 
 | Import | Contents |
 | --- | --- |
-| `@sentilis/cli` | `RestClient`, `validateToken`, `formatIssue`, `SentilisError`, the `FileSystem` adapter interface, path helpers, and the `press` / `market` / `bio` / `workspace` namespaces |
+| `@sentilis/cli` | `RestClient`, `validateToken`, `formatIssue`, `SentilisError`, the `FileSystem` adapter interface, path helpers, and the `press` / `market` / `prime` / `bio` / `workspace` namespaces |
 | `@sentilis/cli/press` | `createPress`, `publishPress`, press types and markdown helpers |
 | `@sentilis/cli/market` | `createProduct`, `publishProduct`, product types and markdown helpers |
+| `@sentilis/cli/prime` | `createPrime`, `publishPrime`, prime plan types and markdown helpers |
 | `@sentilis/cli/bio` | `createBio`, `publishBio`, bio types and markdown helpers |
 | `@sentilis/cli/workspace` | `discoverWorkspace` — the walker behind `sentilis sync` |
-| `@sentilis/cli/press/markdown`, `@sentilis/cli/market/markdown`, `@sentilis/cli/bio/markdown` | frontmatter parsing and validation helpers on their own |
+| `@sentilis/cli/press/markdown`, `@sentilis/cli/market/markdown`, `@sentilis/cli/prime/markdown`, `@sentilis/cli/bio/markdown` | frontmatter parsing and validation helpers on their own |
 | `@sentilis/cli/node` | `NodeFileSystem`, the Node-backed `FileSystem` adapter |
 
 **Everything except `./node` is isomorphic** — no Node-specific imports, so it runs unchanged in browsers, Workers, Deno, Bun and Obsidian mobile. Supply your own `FileSystem` adapter in those environments; `./node` is the one entry point that requires a Node runtime. This is enforced in CI, not just intended.

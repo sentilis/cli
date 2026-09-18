@@ -17,8 +17,9 @@ import { ATTACHMENTS_DIR } from "../walker.js";
  *     bio/        → one bio entry (the folder itself, with variants)
  *     press/      → many press entries (subfolders or top-level .md files)
  *     market/     → many market entries (subfolders or top-level .md files)
+ *     prime/      → many prime plans (subfolders or top-level .md files)
  */
-export type WorkspaceEntryKind = "bio" | "press" | "market";
+export type WorkspaceEntryKind = "bio" | "press" | "market" | "prime";
 
 /**
  * A single, pushable entry discovered inside a workspace tree. The `path`
@@ -52,6 +53,7 @@ export interface WorkspaceTree {
   bio: WorkspaceEntry | null;
   press: WorkspaceEntry[];
   market: WorkspaceEntry[];
+  prime: WorkspaceEntry[];
 }
 
 /**
@@ -59,7 +61,12 @@ export interface WorkspaceTree {
  * Anything else at the top level is ignored (so users can keep
  * `.git/`, `README.md`, etc. next to their content).
  */
-const COMMAND_FOLDERS: WorkspaceEntryKind[] = ["bio", "press", "market"];
+const COMMAND_FOLDERS: WorkspaceEntryKind[] = [
+  "bio",
+  "press",
+  "market",
+  "prime",
+];
 
 function isMarkdown(name: string): boolean {
   return extname(name).toLowerCase() === ".md";
@@ -73,9 +80,9 @@ function isMarkdown(name: string): boolean {
  *
  * Path semantics mirror the per-kind walkers:
  *   - `bio/` (the folder itself) is the bio entry.
- *   - Each subdirectory of `press/` and `market/` is one entry.
- *   - Each top-level `.md` file inside `press/` and `market/` is a
- *     standalone single-file entry.
+ *   - Each subdirectory of `press/`, `market/` and `prime/` is one entry.
+ *   - Each top-level `.md` file inside them is a standalone single-file
+ *     entry.
  *   - `attachments/` folders are ignored at the workspace level (they
  *     belong to their sibling entry).
  */
@@ -105,6 +112,7 @@ export async function discoverWorkspace(
     bio: null,
     press: [],
     market: [],
+    prime: [],
   };
 
   const topEntries = await fs.readDir(rootDir);
@@ -128,6 +136,7 @@ export async function discoverWorkspace(
     const entries = await collectEntries(fs, kindDir, kind);
     if (kind === "press") tree.press = entries;
     else if (kind === "market") tree.market = entries;
+    else if (kind === "prime") tree.prime = entries;
   }
 
   return tree;

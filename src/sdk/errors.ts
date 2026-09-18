@@ -41,6 +41,10 @@ export type ValidationCode =
   | "MISSING_CURRENCY"
   | "DIGITAL_NEEDS_ATTACHMENT"
   | "PRODUCT_FIELD_MUST_BE_LOCAL"
+  // ---- Prime ----
+  | "PRIME_MULTIPLE_FILES"
+  | "PRIME_PRICE_REQUIRED"
+  | "INVALID_PRIME_INTERVAL"
   // ---- Bio ----
   | "INVALID_LANGUAGE"
   | "INVALID_SOCIAL_URL"
@@ -130,6 +134,12 @@ export function formatIssue(issue: ValidationIssue): string {
       return `Product has price ${p.price} but no currency. Set "currency" in the frontmatter (e.g. USD).`;
     case "DIGITAL_NEEDS_ATTACHMENT":
       return `Product of kind "digital" requires an attachment. Add an "attachment" field in the frontmatter or drop a file at ./${p.attachmentsDir}/attachment.zip.`;
+    case "PRIME_MULTIPLE_FILES":
+      return `Multiple markdown files found in ${p.dir}. A prime plan supports a single .md file (no child entries).`;
+    case "PRIME_PRICE_REQUIRED":
+      return `A prime plan needs a price greater than 0 (got ${p.value}): a subscription cannot be free.`;
+    case "INVALID_PRIME_INTERVAL":
+      return `Invalid interval "${p.value}": must be one of ${p.allowed}.`;
     case "PRODUCT_FIELD_MUST_BE_LOCAL":
       return `Field "${p.field}" must be a local path inside ./${p.attachmentsDir}/ (got "${p.value}").`;
     case "INVALID_LANGUAGE":

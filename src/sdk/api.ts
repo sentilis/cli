@@ -1,5 +1,6 @@
 export * as press from "./press/index.js";
 export * as market from "./market/index.js";
+export * as prime from "./prime/index.js";
 export * as bio from "./bio/index.js";
 export * as workspace from "./workspace/index.js";
 
@@ -23,6 +24,12 @@ export {
   type ProductListParams,
   type ProductRemoveResponse,
   type ProductAttachmentResponse,
+  type PrimePublishResponse,
+  type PrimeListItem,
+  type PrimeListResponse,
+  type PrimeListParams,
+  type PrimeInfoResponse,
+  type PrimeRemoveResponse,
   type BioPublishResponse,
   type BioListItem,
   type BioListResponse,
@@ -38,6 +45,7 @@ export type {
   LifecycleStatus,
   LifecycleVisibility,
 } from "./types.js";
+export { CATALOG_VISIBILITY_VALUES, isCatalogVisibility } from "./types.js";
 export { VISIBILITY_VALUES, isValidVisibility } from "./types.js";
 
 export {

@@ -28,6 +28,7 @@ function isDebug(): boolean {
 export const AUTH_ENDPOINT = "/api/v1/auth/token";
 export const PRESS_ENDPOINT = "/api/v1/press";
 export const MARKET_ENDPOINT = "/api/v1/market/products";
+export const PRIME_ENDPOINT = "/api/v1/prime/products";
 export const BIO_ENDPOINT = "/api/v1/bio";
 
 export interface AuthTokenResponse {
@@ -156,6 +157,56 @@ export interface ProductPublishResponse {
     slug: string;
     url: string;
   };
+}
+
+export interface PrimePublishResponse {
+  data: {
+    id: string;
+    slug: string;
+    url: string;
+    created: boolean;
+    /**
+     * Por qué este plan todavía no puede cobrarse, si es el caso. Publicar sale
+     * bien igualmente: el fallo suele ser una key sin permisos, y el creador
+     * tiene que poder enterarse aquí.
+     */
+    billingError: string | null;
+  };
+}
+
+export interface PrimeListItem {
+  id: string;
+  slug: string;
+  name: string;
+  category: string | null;
+  price: number;
+  currency: { name: string; symbol: string | null } | null;
+  interval: string;
+  status: string;
+  visibility: string;
+  subscribers: number;
+  billingError: string | null;
+  sellable: boolean;
+  url: string;
+  createdAt: string;
+}
+
+export interface PrimeListResponse {
+  data: PrimeListItem[];
+  pagination: Pagination;
+}
+
+export type PrimeListParams = ListPageParams;
+
+export interface PrimeInfoResponse {
+  data: PrimeListItem & {
+    description?: string | null;
+    coverUrl?: string | null;
+  };
+}
+
+export interface PrimeRemoveResponse {
+  data: { id: string };
 }
 
 export interface ProductListItem {
@@ -477,6 +528,31 @@ export class RestClient {
     return this.uploadMultipart<ProductAttachmentResponse>(
       `${MARKET_ENDPOINT}/${encodeURIComponent(id)}/attachment`,
       formData,
+    );
+  }
+
+  async uploadPrime(formData: FormData): Promise<PrimePublishResponse> {
+    return this.uploadMultipart<PrimePublishResponse>(PRIME_ENDPOINT, formData);
+  }
+
+  async listPrime(params: PrimeListParams = {}): Promise<PrimeListResponse> {
+    return this.request<PrimeListResponse>(
+      "GET",
+      `${PRIME_ENDPOINT}${buildListQuery(params)}`,
+    );
+  }
+
+  async getPrime(id: string): Promise<PrimeInfoResponse> {
+    return this.request<PrimeInfoResponse>(
+      "GET",
+      `${PRIME_ENDPOINT}/${encodeURIComponent(id)}`,
+    );
+  }
+
+  async removePrime(id: string): Promise<PrimeRemoveResponse> {
+    return this.request<PrimeRemoveResponse>(
+      "DELETE",
+      `${PRIME_ENDPOINT}/${encodeURIComponent(id)}`,
     );
   }
 

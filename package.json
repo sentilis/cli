@@ -1,7 +1,7 @@
 {
   "name": "@sentilis/cli",
-  "version": "4.0.0",
-  "description": "Sentilis CLI and isomorphic TypeScript SDK — publish Markdown bio, press and market content to Sentilis.",
+  "version": "4.1.0",
+  "description": "Sentilis CLI and isomorphic TypeScript SDK — publish Markdown bio, press, market and prime content to Sentilis.",
   "license": "AGPL-3.0-only",
   "type": "module",
   "bin": {
@@ -30,6 +30,11 @@
       "import": "./dist/sdk/market/index.js",
       "default": "./dist/sdk/market/index.js"
     },
+    "./prime": {
+      "types": "./dist/sdk/prime/index.d.ts",
+      "import": "./dist/sdk/prime/index.js",
+      "default": "./dist/sdk/prime/index.js"
+    },
     "./bio": {
       "types": "./dist/sdk/bio/index.d.ts",
       "import": "./dist/sdk/bio/index.js",
@@ -49,6 +54,11 @@
       "types": "./dist/sdk/market/markdown.d.ts",
       "import": "./dist/sdk/market/markdown.js",
       "default": "./dist/sdk/market/markdown.js"
+    },
+    "./prime/markdown": {
+      "types": "./dist/sdk/prime/markdown.d.ts",
+      "import": "./dist/sdk/prime/markdown.js",
+      "default": "./dist/sdk/prime/markdown.js"
     },
     "./bio/markdown": {
       "types": "./dist/sdk/bio/markdown.d.ts",

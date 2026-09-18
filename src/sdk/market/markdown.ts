@@ -3,19 +3,16 @@ import type {
   ProductType,
 } from "./types.js";
 import type { LifecycleStatus, LifecycleVisibility } from "../types.js";
-import { VISIBILITY_VALUES } from "../types.js";
+import { CATALOG_VISIBILITY_VALUES, isCatalogVisibility } from "../types.js";
 
 /**
  * A product is either in the public catalog or hidden. `prime` is a press /
- * bio concept and has no meaning for a listing.
+ * bio concept and has no meaning for a listing. Kept as an alias so nothing
+ * that already imports it breaks.
  */
-export const PRODUCT_VISIBILITY_VALUES = VISIBILITY_VALUES.filter(
-  (v) => v !== "prime",
-);
+export const PRODUCT_VISIBILITY_VALUES = CATALOG_VISIBILITY_VALUES;
 
-function isValidProductVisibility(s: string): s is LifecycleVisibility {
-  return (PRODUCT_VISIBILITY_VALUES as readonly string[]).includes(s);
-}
+const isValidProductVisibility = isCatalogVisibility;
 import type { ValidationIssue } from "../errors.js";
 import {
   splitFrontmatter,

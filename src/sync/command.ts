@@ -4,6 +4,7 @@ import { discoverWorkspace, type WorkspaceEntry } from "../sdk/workspace/index.j
 import { createBio, publishBio } from "../sdk/bio/index.js";
 import { createPress, publishPress } from "../sdk/press/index.js";
 import { createProduct, publishProduct } from "../sdk/market/index.js";
+import { createPrime, publishPrime } from "../sdk/prime/index.js";
 import { NodeFileSystem } from "../sdk/node.js";
 import type { RestClient } from "../sdk/client.js";
 
@@ -54,7 +55,7 @@ function printIssues(label: string, issues: ValidationIssue[]): void {
 async function validateEntry(
   entry: WorkspaceEntry,
 ): Promise<{
-  result?: PressCreate | BioCreate | MarketCreate;
+  result?: AnyCreate;
   issues: ValidationIssue[];
   fatal?: Error;
 }> {
@@ -70,8 +71,17 @@ async function validateEntry(
         issues: result.issues,
       };
     }
-    const result = await createProduct(fs, entry.path, { collectErrors: true });
-    return { result: { kind: "market", value: result }, issues: result.issues };
+    if (entry.kind === "market") {
+      const result = await createProduct(fs, entry.path, {
+        collectErrors: true,
+      });
+      return {
+        result: { kind: "market", value: result },
+        issues: result.issues,
+      };
+    }
+    const result = await createPrime(fs, entry.path, { collectErrors: true });
+    return { result: { kind: "prime", value: result }, issues: result.issues };
   } catch (err) {
     return { issues: [], fatal: err as Error };
   }
@@ -89,7 +99,11 @@ type MarketCreate = {
   kind: "market";
   value: Awaited<ReturnType<typeof createProduct>>;
 };
-type AnyCreate = PressCreate | BioCreate | MarketCreate;
+type PrimeCreate = {
+  kind: "prime";
+  value: Awaited<ReturnType<typeof createPrime>>;
+};
+type AnyCreate = PressCreate | BioCreate | MarketCreate | PrimeCreate;
 
 async function publishEntry(
   client: RestClient,
@@ -111,7 +125,15 @@ async function publishEntry(
       slug: res.data.slug ?? result.value.main.metadata.slug,
     };
   }
-  const res = await publishProduct(client, fs, result.value);
+  if (result.kind === "market") {
+    const res = await publishProduct(client, fs, result.value);
+    return {
+      id: String(res.data.id),
+      url: res.data.url,
+      slug: res.data.slug ?? result.value.main.metadata.slug,
+    };
+  }
+  const res = await publishPrime(client, fs, result.value);
   return {
     id: String(res.data.id),
     url: res.data.url,
@@ -127,12 +149,13 @@ export default defineCommand({
   meta: {
     name: "sync",
     description:
-      "Validate and publish every bio / press / market entry under a workspace directory",
+      "Validate and publish every bio / press / market / prime entry under a workspace directory",
   },
   args: {
     path: {
       type: "positional",
-      description: "Workspace root (the folder containing bio/, press/, market/)",
+      description:
+        "Workspace root (the folder containing bio/, press/, market/, prime/)",
       required: true,
     },
     strict: {
@@ -162,12 +185,14 @@ export default defineCommand({
       ...(tree.bio ? [tree.bio] : []),
       ...tree.press,
       ...tree.market,
+      // Prime al final: un plan se vende por el contenido que ya está arriba.
+      ...tree.prime,
     ];
 
     if (entries.length === 0) {
       console.log(
         `No entries found in ${tree.rootDir}. ` +
-          `Expected a bio/, press/, or market/ subfolder.`,
+          `Expected a bio/, press/, market/ or prime/ subfolder.`,
       );
       return;
     }
@@ -180,6 +205,7 @@ export default defineCommand({
     if (tree.bio) console.log(`  bio:    1 (the bio/ folder)`);
     if (tree.press.length > 0) console.log(`  press:  ${tree.press.length}`);
     if (tree.market.length > 0) console.log(`  market: ${tree.market.length}`);
+    if (tree.prime.length > 0) console.log(`  prime:  ${tree.prime.length}`);
     console.log("");
 
     const results: Array<EntryResult & { create?: AnyCreate }> = [];
