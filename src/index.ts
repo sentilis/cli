@@ -33,6 +33,7 @@ const main = defineCommand({
     market: () => import("./market/command.js").then((m) => m.default),
     prime: () => import("./prime/command.js").then((m) => m.default),
     bio: () => import("./bio/command.js").then((m) => m.default),
+    gallery: () => import("./gallery/command.js").then((m) => m.default),
     sync: () => import("./sync/command.js").then((m) => m.default),
   },
 });

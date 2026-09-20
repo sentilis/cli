@@ -18,8 +18,14 @@ import { ATTACHMENTS_DIR } from "../walker.js";
  *     press/      → many press entries (subfolders or top-level .md files)
  *     market/     → many market entries (subfolders or top-level .md files)
  *     prime/      → many prime plans (subfolders or top-level .md files)
+ *     gallery/    → many gallery entries (subfolders or top-level .md files)
  */
-export type WorkspaceEntryKind = "bio" | "press" | "market" | "prime";
+export type WorkspaceEntryKind =
+  | "bio"
+  | "press"
+  | "market"
+  | "prime"
+  | "gallery";
 
 /**
  * A single, pushable entry discovered inside a workspace tree. The `path`
@@ -54,6 +60,7 @@ export interface WorkspaceTree {
   press: WorkspaceEntry[];
   market: WorkspaceEntry[];
   prime: WorkspaceEntry[];
+  gallery: WorkspaceEntry[];
 }
 
 /**
@@ -66,6 +73,7 @@ const COMMAND_FOLDERS: WorkspaceEntryKind[] = [
   "press",
   "market",
   "prime",
+  "gallery",
 ];
 
 function isMarkdown(name: string): boolean {
@@ -113,6 +121,7 @@ export async function discoverWorkspace(
     press: [],
     market: [],
     prime: [],
+    gallery: [],
   };
 
   const topEntries = await fs.readDir(rootDir);
@@ -137,6 +146,7 @@ export async function discoverWorkspace(
     if (kind === "press") tree.press = entries;
     else if (kind === "market") tree.market = entries;
     else if (kind === "prime") tree.prime = entries;
+    else if (kind === "gallery") tree.gallery = entries;
   }
 
   return tree;

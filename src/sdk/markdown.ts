@@ -5,6 +5,11 @@ import type { ValidationIssue } from "./errors.js";
 export interface ImageLink {
   alt: string;
   src: string;
+  /**
+   * El título entre comillas de `![alt](src "título")`. El servidor ya lo pinta
+   * como `figcaption`, y la galería lo usa de pie de obra.
+   */
+  title?: string;
 }
 
 export interface VideoLink {
@@ -95,7 +100,16 @@ export function validateTag(tag: string): ValidationIssue[] {
 
 // ---------- Link extraction & validation ----------
 
-const MD_IMAGE_RE = /!\[([^\]]*)\]\(([^)]+)\)/g;
+/**
+ * `![alt](src)` y `![alt](src "título")`.
+ *
+ * La versión anterior capturaba `([^)]+)` de una pieza, así que el título se
+ * colaba dentro del `src`: la extensión pasaba a ser `.jpg "título"`, la imagen
+ * no se reconocía, no se subía, y el enlace quedaba roto en el sitio publicado.
+ * Un pie de foto era inservible en todas las funciones.
+ */
+const MD_IMAGE_RE =
+  /!\[([^\]]*)\]\(\s*([^\s)]+)(?:\s+"([^"]*)")?\s*\)/g;
 const MD_LINK_RE = /(?<!!)\[([^\]]*)\]\(([^)]+)\)/g;
 
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm"]);
@@ -142,7 +156,8 @@ export function extractImageLinks(content: string): ImageLink[] {
   while ((match = re.exec(content)) !== null) {
     const src = match[2];
     if (isImageSrc(src)) {
-      images.push({ alt: match[1], src });
+      const title = match[3];
+      images.push(title ? { alt: match[1], src, title } : { alt: match[1], src });
     }
   }
   return images;

@@ -23,7 +23,7 @@ This repository is a single package that publishes two things: the `sentilis` bi
 ## Project Structure
 
 - `src/`: the CLI. Node APIs are fair game here.
-- `src/sdk/`: the isomorphic SDK, published as `@sentilis/cli` and its `./press`, `./market`, `./bio`, `./workspace` subpaths. **No `node:*` imports** — `src/sdk/node.ts` is the single sanctioned exception, published as `./node`.
+- `src/sdk/`: the isomorphic SDK, published as `@sentilis/cli` and its `./press`, `./market`, `./prime`, `./bio`, `./gallery`, `./workspace` subpaths. **No `node:*` imports** — `src/sdk/node.ts` is the single sanctioned exception, published as `./node`.
 - `examples/`: persona-based example workspaces, used as dry-run fixtures in CI.
 - `scripts/`: build-time checks.
 

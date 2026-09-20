@@ -162,9 +162,66 @@ One long-form essay a week, plus the subscriber-only archive.
     $ sentilis prime remove <id>
     ```
 
-### 6. Sync
+### 6. Gallery Commands
 
-Validate and publish every entry under a workspace directory in one shot. A workspace is a folder containing any of `bio/`, `press/`, `market/` or `prime/` — typically one persona per workspace, the same layout the `examples/` directory uses. Designed for the same flow locally and in CI: install, login, run `sentilis sync`.
+Hang images on your public profile. An entry is a folder with one `.md` and its
+`attachments/` — or a single `.md` that only points at remote images. The
+difference with Press is what the image is *for*: here it is not an
+illustration, it is the work, so an entry without at least one image is an
+error.
+
+One entry carries **one or more images**. With one it is a single piece; with
+several it is a series, and they hang in the order they appear in the body.
+Everything but `name` is optional: a photograph goes up with a single line.
+
+```markdown
+---
+name: Morning Light, nº3
+slug: morning-light-3
+year: "2024"
+medium: Digital photography
+dimensions: 60 × 40 cm
+edition: 2/25
+series: Interiors
+tags: [light, interior]
+status: published
+visibility: public
+---
+
+Three rooms, the same hour.
+
+![A beam of light crosses an empty room](./attachments/room-01.png "I. Seven in the morning")
+
+![The same wall, an hour later](./attachments/room-02.png "II. Eight in the morning")
+```
+
+`year`, `medium`, `dimensions` and `edition` are the four fields of a museum
+wall label. Per image, the **alt text** describes the work for anyone who
+cannot see it and the **quoted title** is the caption printed underneath.
+
+The body text around the images is the room text; the images themselves are
+rendered from the entry, not from the prose, so they are never shown twice.
+Image dimensions are read from the file header at publish time so the room
+reserves each frame and nothing jumps while it loads.
+
+*   **Push:** Validate and publish an entry. Use `--dry-run` to validate without pushing.
+    ```bash
+    $ sentilis gallery push ./gallery/morning-light
+    ```
+    Up to 24 images and 25 MB per entry.
+*   **List / info:** See what you have hanging.
+    ```bash
+    $ sentilis gallery list
+    $ sentilis gallery info <id>
+    ```
+*   **Remove:** Take the entry down.
+    ```bash
+    $ sentilis gallery remove <id>
+    ```
+
+### 7. Sync
+
+Validate and publish every entry under a workspace directory in one shot. A workspace is a folder containing any of `bio/`, `press/`, `market/`, `gallery/` or `prime/` — typically one persona per workspace, the same layout the `examples/` directory uses. Designed for the same flow locally and in CI: install, login, run `sentilis sync`.
 
 *   **Push everything (lenient, default):** Walk the workspace, validate each entry, report issues on bad ones, and publish the clean ones. Use this when partial progress is preferable.
     ```bash
@@ -204,13 +261,14 @@ await publishPress(client, fs, entry);
 
 | Import | Contents |
 | --- | --- |
-| `@sentilis/cli` | `RestClient`, `validateToken`, `formatIssue`, `SentilisError`, the `FileSystem` adapter interface, path helpers, and the `press` / `market` / `prime` / `bio` / `workspace` namespaces |
+| `@sentilis/cli` | `RestClient`, `validateToken`, `formatIssue`, `SentilisError`, the `FileSystem` adapter interface, path helpers, and the `press` / `market` / `prime` / `bio` / `gallery` / `workspace` namespaces |
 | `@sentilis/cli/press` | `createPress`, `publishPress`, press types and markdown helpers |
 | `@sentilis/cli/market` | `createProduct`, `publishProduct`, product types and markdown helpers |
 | `@sentilis/cli/prime` | `createPrime`, `publishPrime`, prime plan types and markdown helpers |
 | `@sentilis/cli/bio` | `createBio`, `publishBio`, bio types and markdown helpers |
+| `@sentilis/cli/gallery` | `createGallery`, `publishGallery`, gallery types and markdown helpers |
 | `@sentilis/cli/workspace` | `discoverWorkspace` — the walker behind `sentilis sync` |
-| `@sentilis/cli/press/markdown`, `@sentilis/cli/market/markdown`, `@sentilis/cli/prime/markdown`, `@sentilis/cli/bio/markdown` | frontmatter parsing and validation helpers on their own |
+| `@sentilis/cli/press/markdown`, `@sentilis/cli/market/markdown`, `@sentilis/cli/prime/markdown`, `@sentilis/cli/bio/markdown`, `@sentilis/cli/gallery/markdown` | frontmatter parsing and validation helpers on their own |
 | `@sentilis/cli/node` | `NodeFileSystem`, the Node-backed `FileSystem` adapter |
 
 **Everything except `./node` is isomorphic** — no Node-specific imports, so it runs unchanged in browsers, Workers, Deno, Bun and Obsidian mobile. Supply your own `FileSystem` adapter in those environments; `./node` is the one entry point that requires a Node runtime. This is enforced in CI, not just intended.

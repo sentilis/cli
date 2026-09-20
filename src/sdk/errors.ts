@@ -45,6 +45,11 @@ export type ValidationCode =
   | "PRIME_MULTIPLE_FILES"
   | "PRIME_PRICE_REQUIRED"
   | "INVALID_PRIME_INTERVAL"
+  // ---- Gallery ----
+  | "GALLERY_MULTIPLE_FILES"
+  | "GALLERY_NO_IMAGES"
+  | "GALLERY_TOO_MANY_IMAGES"
+  | "GALLERY_COVER_NOT_IN_BODY"
   // ---- Bio ----
   | "INVALID_LANGUAGE"
   | "INVALID_SOCIAL_URL"
@@ -142,6 +147,14 @@ export function formatIssue(issue: ValidationIssue): string {
       return `Invalid interval "${p.value}": must be one of ${p.allowed}.`;
     case "PRODUCT_FIELD_MUST_BE_LOCAL":
       return `Field "${p.field}" must be a local path inside ./${p.attachmentsDir}/ (got "${p.value}").`;
+    case "GALLERY_MULTIPLE_FILES":
+      return `Multiple markdown files found in ${p.dir}. A gallery entry supports a single .md file.`;
+    case "GALLERY_NO_IMAGES":
+      return `A gallery entry needs at least one image in its body: the image is the work, not an illustration.`;
+    case "GALLERY_TOO_MANY_IMAGES":
+      return `This entry has ${p.count} images and the limit is ${p.max}. Split it into several entries.`;
+    case "GALLERY_COVER_NOT_IN_BODY":
+      return `The cover "${p.value}" is not one of the images in the body: a cover has to be one of the works on show.`;
     case "INVALID_LANGUAGE":
       return `Invalid language "${p.value}": must be a short ISO code (e.g. "en", "es", "pt-br").`;
     case "INVALID_SOCIAL_URL":

@@ -2,6 +2,7 @@ export * as press from "./press/index.js";
 export * as market from "./market/index.js";
 export * as prime from "./prime/index.js";
 export * as bio from "./bio/index.js";
+export * as gallery from "./gallery/index.js";
 export * as workspace from "./workspace/index.js";
 
 export {
@@ -37,6 +38,12 @@ export {
   type BioInfoChild,
   type BioInfoResponse,
   type BioRemoveResponse,
+  type GalleryPublishResponse,
+  type GalleryListItem,
+  type GalleryListResponse,
+  type GalleryListParams,
+  type GalleryInfoResponse,
+  type GalleryRemoveResponse,
 } from "./client.js";
 
 export type {

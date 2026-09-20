@@ -30,6 +30,7 @@ export const PRESS_ENDPOINT = "/api/v1/press";
 export const MARKET_ENDPOINT = "/api/v1/market/products";
 export const PRIME_ENDPOINT = "/api/v1/prime/products";
 export const BIO_ENDPOINT = "/api/v1/bio";
+export const GALLERY_ENDPOINT = "/api/v1/gallery";
 
 export interface AuthTokenResponse {
   data: { username: string };
@@ -206,6 +207,55 @@ export interface PrimeInfoResponse {
 }
 
 export interface PrimeRemoveResponse {
+  data: { id: string };
+}
+
+export interface GalleryPublishResponse {
+  data: {
+    id: string;
+    slug: string;
+    url: string;
+    created: boolean;
+  };
+}
+
+export interface GalleryListItem {
+  id: string;
+  slug: string;
+  name: string;
+  category: string | null;
+  tags: string[];
+  status: string;
+  visibility: string;
+  imageCount: number;
+  url: string;
+  createdAt: string;
+}
+
+export interface GalleryListResponse {
+  data: GalleryListItem[];
+  pagination: Pagination;
+}
+
+export type GalleryListParams = ListPageParams & { visibility?: string[] };
+
+export interface GalleryInfoResponse {
+  data: GalleryListItem & {
+    year?: string | null;
+    medium?: string | null;
+    dimensions?: string | null;
+    edition?: string | null;
+    images?: Array<{
+      url: string;
+      alt: string;
+      caption: string | null;
+      width: number | null;
+      height: number | null;
+    }>;
+  };
+}
+
+export interface GalleryRemoveResponse {
   data: { id: string };
 }
 
@@ -553,6 +603,36 @@ export class RestClient {
     return this.request<PrimeRemoveResponse>(
       "DELETE",
       `${PRIME_ENDPOINT}/${encodeURIComponent(id)}`,
+    );
+  }
+
+  async uploadGallery(formData: FormData): Promise<GalleryPublishResponse> {
+    return this.uploadMultipart<GalleryPublishResponse>(
+      GALLERY_ENDPOINT,
+      formData,
+    );
+  }
+
+  async listGallery(
+    params: GalleryListParams = {},
+  ): Promise<GalleryListResponse> {
+    return this.request<GalleryListResponse>(
+      "GET",
+      `${GALLERY_ENDPOINT}${buildListQuery(params)}`,
+    );
+  }
+
+  async getGallery(id: string): Promise<GalleryInfoResponse> {
+    return this.request<GalleryInfoResponse>(
+      "GET",
+      `${GALLERY_ENDPOINT}/${encodeURIComponent(id)}`,
+    );
+  }
+
+  async removeGallery(id: string): Promise<GalleryRemoveResponse> {
+    return this.request<GalleryRemoveResponse>(
+      "DELETE",
+      `${GALLERY_ENDPOINT}/${encodeURIComponent(id)}`,
     );
   }
 

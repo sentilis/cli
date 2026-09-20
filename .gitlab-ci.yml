@@ -52,12 +52,17 @@ build:
       echo "Checking the SDK boundary in dist/…"
       npm run check:dist
     - |
+      echo "Running unit tests…"
+      npm test
+    - |
       echo "Smoke-testing CLI…"
       node dist/index.js --help > /dev/null
       node dist/index.js auth   --help > /dev/null
       node dist/index.js bio    --help > /dev/null
       node dist/index.js press  --help > /dev/null
       node dist/index.js market --help > /dev/null
+      node dist/index.js prime  --help > /dev/null
+      node dist/index.js gallery --help > /dev/null
       node dist/index.js sync   --help > /dev/null
       echo "OK — all subcommands respond"
     - |
@@ -72,6 +77,7 @@ build:
       node dist/index.js press  push examples/personal-brand/press/productivity-tools  --dry-run > /dev/null
       node dist/index.js market push examples/entrepreneur/market/pitch-deck           --dry-run > /dev/null
       node dist/index.js market push examples/personal-brand/market/coaching-session   --dry-run > /dev/null
+      node dist/index.js gallery push examples/personal-brand/gallery/morning-light     --dry-run > /dev/null
       node dist/index.js sync        examples/entrepreneur                             --dry-run > /dev/null
       node dist/index.js sync        examples/personal-brand                           --dry-run > /dev/null
       echo "OK — fixtures validate"
