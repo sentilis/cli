@@ -1,10 +1,12 @@
 # Contributing to Sentilis
 
-Thank you for your interest in contributing to Sentilis! We welcome issues and pull requests that improve the CLI, the SDK, or our documentation.
+Thank you for your interest in contributing to Sentilis! We welcome issues and pull requests that improve the CLI or our documentation.
+
+The validation and publishing logic lives in [`@sentilis/sdk`](https://www.npmjs.com/package/@sentilis/sdk), inside the platform monorepo. If your change is about *what a valid press entry is*, it belongs there; if it is about *what the terminal does with it*, it belongs here.
 
 ## Development Setup
 
-This repository is a single package that publishes two things: the `sentilis` binary and the isomorphic SDK.
+This repository publishes the `sentilis` binary. It depends on `@sentilis/sdk` like any other consumer.
 
 1.  **Clone the repository**:
     ```bash
@@ -23,13 +25,12 @@ This repository is a single package that publishes two things: the `sentilis` bi
 ## Project Structure
 
 - `src/`: the CLI. Node APIs are fair game here.
-- `src/sdk/`: the isomorphic SDK, published as `@sentilis/cli` and its `./press`, `./market`, `./prime`, `./bio`, `./gallery`, `./workspace` subpaths. **No `node:*` imports** — `src/sdk/node.ts` is the single sanctioned exception, published as `./node`.
+- `src/compat/`: one-line re-exports of `@sentilis/sdk`, so the subpaths this package used to publish (`@sentilis/cli/press` and friends) keep working through all of 5.x. They are removed in 6.0 and nothing else should import them.
 - `examples/`: persona-based example workspaces, used as dry-run fixtures in CI.
 - `scripts/`: build-time checks.
 
-Two rules keep that structure honest, and both are enforced in CI:
+One rule keeps that structure honest, and it is enforced in CI:
 
-- **The SDK must stay isomorphic.** It is bundled into the [Obsidian plugin](https://github.com/sentilis/obsidian), which runs on mobile where there is no Node runtime. `npm run check:sdk` type-checks `src/sdk` with `@types/node` removed, so a `node:*` import — or a stray `process` or `Buffer` — is a compile error. `npm run check:dist` then asserts the same thing about the emitted output, and that the SDK never imports from outside its own subtree (one `import "../config.js"` would drag `node:fs` into a phone).
 - **CLI entry files stay at the root of `src/`.** Both `src/index.ts` and `src/client.ts` read the package version through `require("../package.json")`, which resolves relative to the *emitted* file. Moving them into a subdirectory would break that at runtime, silently, along with the `bin` path. TypeScript will not warn you.
 
 ## Coding Standards

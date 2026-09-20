@@ -1,9 +1,8 @@
 import { defineCommand } from "citty";
-import { formatIssue } from "../sdk/errors.js";
-import { SentilisApiError } from "../sdk/client.js";
-import { createPrime, publishPrime } from "../sdk/prime/index.js";
-import type { PrimeMetadata } from "../sdk/prime/index.js";
-import { NodeFileSystem } from "../sdk/node.js";
+import { formatIssue, SentilisApiError } from "@sentilis/sdk";
+import { createPrime, publishPrime } from "@sentilis/sdk/prime";
+import type { PrimeMetadata } from "@sentilis/sdk/prime";
+import { NodeFileSystem } from "@sentilis/sdk/node";
 
 function reportError(err: unknown): never {
   // Entre publicar el paquete y desplegar la plataforma hay una ventana en la

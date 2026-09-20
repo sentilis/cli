@@ -1,7 +1,7 @@
 import { defineCommand } from "citty";
-import { formatIssue } from "../sdk/errors.js";
-import { createProduct, publishProduct } from "../sdk/market/index.js";
-import { NodeFileSystem } from "../sdk/node.js";
+import { formatIssue } from "@sentilis/sdk";
+import { createProduct, publishProduct } from "@sentilis/sdk/market";
+import { NodeFileSystem } from "@sentilis/sdk/node";
 
 function reportError(err: unknown): never {
   const e = err as Error;

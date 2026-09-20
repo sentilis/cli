@@ -1,13 +1,16 @@
 import { defineCommand } from "citty";
-import { formatIssue, type ValidationIssue } from "../sdk/errors.js";
-import { discoverWorkspace, type WorkspaceEntry } from "../sdk/workspace/index.js";
-import { createBio, publishBio } from "../sdk/bio/index.js";
-import { createPress, publishPress } from "../sdk/press/index.js";
-import { createProduct, publishProduct } from "../sdk/market/index.js";
-import { createPrime, publishPrime } from "../sdk/prime/index.js";
-import { createGallery, publishGallery } from "../sdk/gallery/index.js";
-import { NodeFileSystem } from "../sdk/node.js";
-import type { RestClient } from "../sdk/client.js";
+import {
+  formatIssue,
+  type ValidationIssue,
+  type RestClient,
+} from "@sentilis/sdk";
+import { discoverWorkspace, type WorkspaceEntry } from "@sentilis/sdk/workspace";
+import { createBio, publishBio } from "@sentilis/sdk/bio";
+import { createPress, publishPress } from "@sentilis/sdk/press";
+import { createProduct, publishProduct } from "@sentilis/sdk/market";
+import { createPrime, publishPrime } from "@sentilis/sdk/prime";
+import { createGallery, publishGallery } from "@sentilis/sdk/gallery";
+import { NodeFileSystem } from "@sentilis/sdk/node";
 
 const fs = new NodeFileSystem();
 

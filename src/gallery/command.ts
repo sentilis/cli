@@ -1,9 +1,8 @@
 import { defineCommand } from "citty";
-import { formatIssue } from "../sdk/errors.js";
-import { SentilisApiError } from "../sdk/client.js";
-import { createGallery, publishGallery } from "../sdk/gallery/index.js";
-import type { GalleryFile } from "../sdk/gallery/index.js";
-import { NodeFileSystem } from "../sdk/node.js";
+import { formatIssue, SentilisApiError } from "@sentilis/sdk";
+import { createGallery, publishGallery } from "@sentilis/sdk/gallery";
+import type { GalleryFile } from "@sentilis/sdk/gallery";
+import { NodeFileSystem } from "@sentilis/sdk/node";
 
 function reportError(err: unknown): never {
   // Entre publicar el paquete y desplegar la plataforma hay una ventana en la

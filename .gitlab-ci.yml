@@ -1,15 +1,17 @@
 # GitLab CI/CD for @sentilis/cli
 #
-# This package ships two things from one tree: the `sentilis` binary
-# (src/, Node APIs allowed) and the isomorphic SDK (src/sdk/, published as
-# the "." and "./press|market|bio|workspace|node" subpaths). The SDK is
-# bundled into the Obsidian plugin, which runs on mobile, so keeping Node
-# code out of it is a release-blocking invariant, not a style preference.
+# This package ships the `sentilis` binary. The isomorphic SDK it used to
+# carry in src/sdk now lives in the platform monorepo and is published as
+# `@sentilis/sdk`; this package depends on it like anyone else, and keeps the
+# old subpaths alive as one-line re-exports (src/compat/) for all of 5.x.
+#
+# The boundary checks moved with the code: the "no Node APIs" invariant is
+# enforced where the SDK is built now, not here.
 #
 # Pipelines:
-#   • Every push to main and every MR → `build` job type-checks, compiles,
-#     enforces the SDK boundary, and smoke-tests the CLI across the
-#     supported Node matrix.
+#   • Every push to main and every MR → `build` job type-checks, compiles and
+#     smoke-tests the CLI across the supported Node matrix, including a dry
+#     run of every bundled example.
 #   • Tag push matching `v*` (e.g. v2.0.1) → `publish` job pushes to npm.
 #     Prerelease tags (v2.0.0-rc.1) publish under the `next` dist-tag so
 #     they never move `latest`.
@@ -45,15 +47,6 @@ build:
   script:
     - node --version
     - npm run build
-    - |
-      echo "Type-checking the SDK subtree with no Node types…"
-      npm run check:sdk
-    - |
-      echo "Checking the SDK boundary in dist/…"
-      npm run check:dist
-    - |
-      echo "Running unit tests…"
-      npm test
     - |
       echo "Smoke-testing CLI…"
       node dist/index.js --help > /dev/null

@@ -19,7 +19,7 @@
 
 The **Sentilis CLI** is a powerful tool designed to seamlessly bridge your local development workflow with the Sentilis platform. It enables you to confidently validate, manage, and push content directly from your terminal using simple, trackable Markdown files.
 
-The package also ships the isomorphic TypeScript SDK the CLI is built on, so you can drive the same validation and publishing logic from your own code. As of v2 this SDK lives here; it was previously published separately as `@sentilis/core`, which is now retired. See [Use as a library](#use-as-a-library).
+The validation and publishing logic the CLI is built on is the isomorphic SDK, published separately as [`@sentilis/sdk`](https://www.npmjs.com/package/@sentilis/sdk). Use it directly when you want to drive the same logic from your own code. See [Use as a library](#use-as-a-library).
 
 ## Installation
 
@@ -243,12 +243,16 @@ Exit codes are pipeline-friendly: `0` only when every requested step succeeded; 
 
 ## Use as a library
 
-Everything the CLI does is available programmatically. Install the package and import from it directly:
+Everything the CLI does lives in the SDK, and the SDK is its own package:
+
+```bash
+npm install @sentilis/sdk
+```
 
 ```ts
-import { RestClient } from "@sentilis/cli";
-import { createPress, publishPress } from "@sentilis/cli/press";
-import { NodeFileSystem } from "@sentilis/cli/node";
+import { RestClient } from "@sentilis/sdk";
+import { createPress, publishPress } from "@sentilis/sdk/press";
+import { NodeFileSystem } from "@sentilis/sdk/node";
 
 const fs = new NodeFileSystem();
 const client = new RestClient(process.env.SENTILIS_TOKEN!);
@@ -261,19 +265,26 @@ await publishPress(client, fs, entry);
 
 | Import | Contents |
 | --- | --- |
-| `@sentilis/cli` | `RestClient`, `validateToken`, `formatIssue`, `SentilisError`, the `FileSystem` adapter interface, path helpers, and the `press` / `market` / `prime` / `bio` / `gallery` / `workspace` namespaces |
-| `@sentilis/cli/press` | `createPress`, `publishPress`, press types and markdown helpers |
-| `@sentilis/cli/market` | `createProduct`, `publishProduct`, product types and markdown helpers |
-| `@sentilis/cli/prime` | `createPrime`, `publishPrime`, prime plan types and markdown helpers |
-| `@sentilis/cli/bio` | `createBio`, `publishBio`, bio types and markdown helpers |
-| `@sentilis/cli/gallery` | `createGallery`, `publishGallery`, gallery types and markdown helpers |
-| `@sentilis/cli/workspace` | `discoverWorkspace` — the walker behind `sentilis sync` |
-| `@sentilis/cli/press/markdown`, `@sentilis/cli/market/markdown`, `@sentilis/cli/prime/markdown`, `@sentilis/cli/bio/markdown`, `@sentilis/cli/gallery/markdown` | frontmatter parsing and validation helpers on their own |
-| `@sentilis/cli/node` | `NodeFileSystem`, the Node-backed `FileSystem` adapter |
+| `@sentilis/sdk` | `RestClient`, `validateToken`, `formatIssue`, `SentilisError`, the `FileSystem` adapter interface, path helpers, and the `press` / `market` / `prime` / `bio` / `gallery` / `workspace` namespaces |
+| `@sentilis/sdk/press` | `createPress`, `publishPress`, press types and markdown helpers |
+| `@sentilis/sdk/market` | `createProduct`, `publishProduct`, product types and markdown helpers |
+| `@sentilis/sdk/prime` | `createPrime`, `publishPrime`, prime plan types and markdown helpers |
+| `@sentilis/sdk/bio` | `createBio`, `publishBio`, bio types and markdown helpers |
+| `@sentilis/sdk/gallery` | `createGallery`, `publishGallery`, gallery types and markdown helpers |
+| `@sentilis/sdk/workspace` | `discoverWorkspace` — the walker behind `sentilis sync` |
+| `@sentilis/sdk/press/markdown`, `@sentilis/sdk/market/markdown`, `@sentilis/sdk/prime/markdown`, `@sentilis/sdk/bio/markdown`, `@sentilis/sdk/gallery/markdown` | frontmatter parsing and validation helpers on their own |
+| `@sentilis/sdk/node` | `NodeFileSystem`, the Node-backed `FileSystem` adapter |
 
 **Everything except `./node` is isomorphic** — no Node-specific imports, so it runs unchanged in browsers, Workers, Deno, Bun and Obsidian mobile. Supply your own `FileSystem` adapter in those environments; `./node` is the one entry point that requires a Node runtime. This is enforced in CI, not just intended.
 
 Debug logging is written to stderr when `DEBUG=1`, and is honoured only where a `process` global exists.
+
+### Importing from `@sentilis/cli` (deprecated)
+
+Until v4 the SDK was published from this package. Every old subpath still
+works in 5.x — `@sentilis/cli/press` re-exports `@sentilis/sdk/press`, and so
+on — so nothing breaks the day you upgrade. They are removed in 6.0: change
+the import, the names are identical.
 
 ## Stay in touch
 - Website - [https://about.sentilis.me](https://about.sentilis.me?utm_source=github&utm_medium=readme&utm_campaign=cli-docs&utm_content=stay-in-touch-website)

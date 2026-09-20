@@ -1,7 +1,6 @@
 import { createRequire } from "node:module";
 import os from "node:os";
-import { RestClient } from "./sdk/client.js";
-import type { Profile } from "./sdk/types.js";
+import { RestClient, type Profile } from "@sentilis/sdk";
 
 const require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-require-imports

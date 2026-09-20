@@ -1,79 +1,79 @@
 {
   "name": "@sentilis/cli",
-  "version": "4.2.0",
-  "description": "Sentilis CLI and isomorphic TypeScript SDK — publish Markdown bio, press, market and prime content to Sentilis.",
+  "version": "5.0.0",
+  "description": "Sentilis CLI — publish Markdown bio, press, market, prime and gallery content to Sentilis. Built on @sentilis/sdk.",
   "license": "AGPL-3.0-only",
   "type": "module",
   "bin": {
     "sentilis": "dist/index.js"
   },
-  "main": "dist/sdk/api.js",
-  "types": "dist/sdk/api.d.ts",
+  "main": "dist/compat/index.js",
+  "types": "dist/compat/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/sdk/api.d.ts",
-      "import": "./dist/sdk/api.js",
-      "default": "./dist/sdk/api.js"
+      "types": "./dist/compat/index.d.ts",
+      "import": "./dist/compat/index.js",
+      "default": "./dist/compat/index.js"
     },
     "./node": {
-      "types": "./dist/sdk/node.d.ts",
-      "import": "./dist/sdk/node.js",
-      "default": "./dist/sdk/node.js"
-    },
-    "./press": {
-      "types": "./dist/sdk/press/index.d.ts",
-      "import": "./dist/sdk/press/index.js",
-      "default": "./dist/sdk/press/index.js"
-    },
-    "./market": {
-      "types": "./dist/sdk/market/index.d.ts",
-      "import": "./dist/sdk/market/index.js",
-      "default": "./dist/sdk/market/index.js"
-    },
-    "./prime": {
-      "types": "./dist/sdk/prime/index.d.ts",
-      "import": "./dist/sdk/prime/index.js",
-      "default": "./dist/sdk/prime/index.js"
-    },
-    "./gallery": {
-      "types": "./dist/sdk/gallery/index.d.ts",
-      "import": "./dist/sdk/gallery/index.js",
-      "default": "./dist/sdk/gallery/index.js"
-    },
-    "./gallery/markdown": {
-      "types": "./dist/sdk/gallery/markdown.d.ts",
-      "import": "./dist/sdk/gallery/markdown.js",
-      "default": "./dist/sdk/gallery/markdown.js"
+      "types": "./dist/compat/node.d.ts",
+      "import": "./dist/compat/node.js",
+      "default": "./dist/compat/node.js"
     },
     "./bio": {
-      "types": "./dist/sdk/bio/index.d.ts",
-      "import": "./dist/sdk/bio/index.js",
-      "default": "./dist/sdk/bio/index.js"
-    },
-    "./workspace": {
-      "types": "./dist/sdk/workspace/index.d.ts",
-      "import": "./dist/sdk/workspace/index.js",
-      "default": "./dist/sdk/workspace/index.js"
-    },
-    "./press/markdown": {
-      "types": "./dist/sdk/press/markdown.d.ts",
-      "import": "./dist/sdk/press/markdown.js",
-      "default": "./dist/sdk/press/markdown.js"
-    },
-    "./market/markdown": {
-      "types": "./dist/sdk/market/markdown.d.ts",
-      "import": "./dist/sdk/market/markdown.js",
-      "default": "./dist/sdk/market/markdown.js"
-    },
-    "./prime/markdown": {
-      "types": "./dist/sdk/prime/markdown.d.ts",
-      "import": "./dist/sdk/prime/markdown.js",
-      "default": "./dist/sdk/prime/markdown.js"
+      "types": "./dist/compat/bio.d.ts",
+      "import": "./dist/compat/bio.js",
+      "default": "./dist/compat/bio.js"
     },
     "./bio/markdown": {
-      "types": "./dist/sdk/bio/markdown.d.ts",
-      "import": "./dist/sdk/bio/markdown.js",
-      "default": "./dist/sdk/bio/markdown.js"
+      "types": "./dist/compat/bio.markdown.d.ts",
+      "import": "./dist/compat/bio.markdown.js",
+      "default": "./dist/compat/bio.markdown.js"
+    },
+    "./press": {
+      "types": "./dist/compat/press.d.ts",
+      "import": "./dist/compat/press.js",
+      "default": "./dist/compat/press.js"
+    },
+    "./press/markdown": {
+      "types": "./dist/compat/press.markdown.d.ts",
+      "import": "./dist/compat/press.markdown.js",
+      "default": "./dist/compat/press.markdown.js"
+    },
+    "./market": {
+      "types": "./dist/compat/market.d.ts",
+      "import": "./dist/compat/market.js",
+      "default": "./dist/compat/market.js"
+    },
+    "./market/markdown": {
+      "types": "./dist/compat/market.markdown.d.ts",
+      "import": "./dist/compat/market.markdown.js",
+      "default": "./dist/compat/market.markdown.js"
+    },
+    "./prime": {
+      "types": "./dist/compat/prime.d.ts",
+      "import": "./dist/compat/prime.js",
+      "default": "./dist/compat/prime.js"
+    },
+    "./prime/markdown": {
+      "types": "./dist/compat/prime.markdown.d.ts",
+      "import": "./dist/compat/prime.markdown.js",
+      "default": "./dist/compat/prime.markdown.js"
+    },
+    "./gallery": {
+      "types": "./dist/compat/gallery.d.ts",
+      "import": "./dist/compat/gallery.js",
+      "default": "./dist/compat/gallery.js"
+    },
+    "./gallery/markdown": {
+      "types": "./dist/compat/gallery.markdown.d.ts",
+      "import": "./dist/compat/gallery.markdown.js",
+      "default": "./dist/compat/gallery.markdown.js"
+    },
+    "./workspace": {
+      "types": "./dist/compat/workspace.d.ts",
+      "import": "./dist/compat/workspace.js",
+      "default": "./dist/compat/workspace.js"
     },
     "./package.json": "./package.json"
   },
@@ -87,15 +87,13 @@
   ],
   "scripts": {
     "build": "tsc",
-    "check:sdk": "tsc -p tsconfig.sdk.json",
-    "check:dist": "node scripts/check-sdk-boundary.mjs",
-    "test": "node --import tsx --test \"test/**/*.test.ts\"",
-    "verify": "npm run build && npm run check:sdk && npm run check:dist && npm test",
+    "verify": "npm run build",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run verify"
   },
   "dependencies": {
+    "@sentilis/sdk": "^1.0.0",
     "citty": "^0.2.1"
   },
   "devDependencies": {
@@ -109,12 +107,12 @@
   "keywords": [
     "sentilis",
     "cli",
-    "sdk",
     "markdown",
     "bio",
     "press",
     "market",
-    "isomorphic",
+    "prime",
+    "gallery",
     "publishing"
   ],
   "homepage": "https://about.sentilis.me",
