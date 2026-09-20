@@ -218,7 +218,11 @@ export default defineCommand({
           console.log(`[${p.id}] ${p.name}`);
           console.log(`  Slug:       ${p.slug}`);
           console.log(`  Status:     ${p.status}`);
-          console.log(`  Visibility: ${p.visibility}`);
+          console.log(
+            `  Visibility: ${p.visibility}${
+              p.hasPassword ? " (password protected)" : ""
+            }`,
+          );
           if (p.coverUrl) console.log(`  Cover:      ${p.coverUrl}`);
           if (p.category) console.log(`  Category:   ${p.category}`);
           if (p.tags && p.tags.length > 0) {
@@ -236,7 +240,11 @@ export default defineCommand({
               console.log(`        Slug:       ${child.slug}`);
               if (child.status) console.log(`        Status:     ${child.status}`);
               if (child.visibility)
-                console.log(`        Visibility: ${child.visibility}`);
+                console.log(
+                  `        Visibility: ${child.visibility}${
+                    child.hasPassword ? " (password protected)" : ""
+                  }`,
+                );
               if (child.category) console.log(`        Category:   ${child.category}`);
               if (child.url) console.log(`        URL:        ${child.url}`);
             }
