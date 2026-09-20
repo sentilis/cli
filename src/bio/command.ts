@@ -1,5 +1,5 @@
 import { defineCommand } from "citty";
-import { formatIssue } from "@sentilis/sdk";
+import { formatIssue, splitIssues } from "@sentilis/sdk";
 import { createBio, publishBio } from "@sentilis/sdk/bio";
 import { NodeFileSystem } from "@sentilis/sdk/node";
 
@@ -45,13 +45,23 @@ export default defineCommand({
             const result = await createBio(fs, args.path, {
               collectErrors: true,
             });
-            if (result.issues.length > 0) {
+            const { errors, warnings } = splitIssues(result.issues);
+            // Un aviso se imprime y se sigue: si abortara, una errata en una
+            // clave impediría publicar la entrada entera.
+            for (const issue of warnings) {
               console.error(
-                `Found ${result.issues.length} validation error${
-                  result.issues.length === 1 ? "" : "s"
+                `  ! [${issue.code}] ${
+                  issue.file ? `(${issue.file}) ` : ""
+                }${formatIssue(issue)}`,
+              );
+            }
+            if (errors.length > 0) {
+              console.error(
+                `Found ${errors.length} validation error${
+                  errors.length === 1 ? "" : "s"
                 }:`,
               );
-              for (const issue of result.issues) {
+              for (const issue of errors) {
                 console.error(
                   `  - [${issue.code}] ${
                     issue.file ? `(${issue.file}) ` : ""

@@ -1,6 +1,7 @@
 import { defineCommand } from "citty";
 import {
   formatIssue,
+  splitIssues,
   type ValidationIssue,
   type RestClient,
 } from "@sentilis/sdk";
@@ -37,16 +38,23 @@ function reportError(err: unknown): never {
 }
 
 function printIssues(label: string, issues: ValidationIssue[]): void {
-  console.error(
-    `  ${label}: ${issues.length} issue${issues.length === 1 ? "" : "s"}`,
-  );
-  for (const issue of issues) {
-    console.error(
-      `    - [${issue.code}] ${
-        issue.file ? `(${issue.file}) ` : ""
-      }${formatIssue(issue)}`,
-    );
+  const { errors, warnings } = splitIssues(issues);
+  const parts: string[] = [];
+  if (errors.length > 0) {
+    parts.push(`${errors.length} error${errors.length === 1 ? "" : "s"}`);
   }
+  if (warnings.length > 0) {
+    parts.push(`${warnings.length} warning${warnings.length === 1 ? "" : "s"}`);
+  }
+  console.error(`  ${label}: ${parts.join(", ")}`);
+  for (const issue of errors) console.error(line("-", issue));
+  for (const issue of warnings) console.error(line("!", issue));
+}
+
+function line(marker: string, issue: ValidationIssue): string {
+  return `    ${marker} [${issue.code}] ${
+    issue.file ? `(${issue.file}) ` : ""
+  }${formatIssue(issue)}`;
 }
 
 /**
@@ -250,9 +258,16 @@ export default defineCommand({
     }
 
     const totalIssues = results.reduce((n, r) => n + r.issues.length, 0);
+    // Los avisos se imprimen, se cuentan aparte y no impiden publicar: si
+    // bloquearan, una errata en una clave dejaría fuera la entrada entera,
+    // que es peor que el silencio que el aviso viene a quitar.
+    const errorCount = results.reduce(
+      (n, r) => n + splitIssues(r.issues).errors.length,
+      0,
+    );
     const fatalCount = results.filter((r) => r.fatal).length;
     const badCount = results.filter(
-      (r) => r.fatal || r.issues.length > 0,
+      (r) => r.fatal || splitIssues(r.issues).errors.length > 0,
     ).length;
 
     if (totalIssues > 0 || fatalCount > 0) {
@@ -276,7 +291,7 @@ export default defineCommand({
       console.log(`All ${entries.length} entries validated cleanly.`);
     }
 
-    const shouldAbort = strict && (totalIssues > 0 || fatalCount > 0);
+    const shouldAbort = strict && (errorCount > 0 || fatalCount > 0);
     if (shouldAbort) {
       console.error(
         `--strict: aborting without publishing because ${badCount} entr${
