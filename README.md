@@ -296,4 +296,4 @@ For issues and feature requests, please use the GitHub Issues page.
 
 ## License
 
-Sentilis CLI is licensed under the [GNU Affero General Public License v3.0](./LICENSE). See the [Contributing Guide](./CONTRIBUTING.md) for more details.
+Sentilis CLI is licensed under the [MIT License](./LICENSE). See the [Contributing Guide](./CONTRIBUTING.md) for more details.

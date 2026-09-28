@@ -2,7 +2,7 @@
   "name": "@sentilis/cli",
   "version": "4.1.0",
   "description": "Sentilis CLI — publish Markdown bio, press, market, prime and gallery content to Sentilis. Built on @sentilis/sdk.",
-  "license": "AGPL-3.0-only",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "sentilis": "dist/index.js"
