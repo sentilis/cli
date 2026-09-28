@@ -3,7 +3,8 @@ name: "NexusOps Raises $2.5M Seed Round to Revolutionize Cloud Automation"
 slug: "nexusops-seed-round-announcement"
 category: "News"
 status: published
-visibility: public
+visibility: private
+password: abc
 tags: funding, seed, infrastructure, devops
 authors: Jordan Lee (CEO)
 ---
