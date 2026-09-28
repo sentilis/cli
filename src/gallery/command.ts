@@ -5,11 +5,14 @@ import type { GalleryFile } from "@sentilis/sdk/gallery";
 import { NodeFileSystem } from "@sentilis/sdk/node";
 
 function reportError(err: unknown): never {
-  // Entre publicar el paquete y desplegar la plataforma hay una ventana en la
-  // que la ruta no existe todavía. Decirlo es más barato que un ticket.
   if (err instanceof SentilisApiError && err.status === 404) {
+    // Sin el sobre de error de la API (`UNKNOWN`) el 404 es de la ruta: entre
+    // publicar el paquete y desplegar la plataforma hay una ventana en la que
+    // aún no existe. Con él, la ruta existe y lo que falta es la obra.
     console.error(
-      "Error: Gallery is not available on this server yet. Update required.",
+      err.code === "UNKNOWN"
+        ? "Error: Gallery is not available on this server yet. Update required."
+        : "Error: no gallery entry with that id in your profile.",
     );
     process.exit(1);
   }

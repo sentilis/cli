@@ -301,22 +301,23 @@ export default defineCommand({
       process.exit(1);
     }
 
+    // Publicable es lo que no tiene errores: un aviso se imprime, pero no
+    // deja la entrada fuera (ver el comentario de `errorCount`).
+    const isPublishable = (r: (typeof results)[number]) =>
+      !r.fatal && splitIssues(r.issues).errors.length === 0;
+
     if (dryRun) {
-      const wouldPublish = results.filter(
-        (r) => !r.fatal && r.issues.length === 0,
-      ).length;
+      const wouldPublish = results.filter(isPublishable).length;
       console.log(
         `Dry run: ${wouldPublish} of ${entries.length} entr${
           entries.length === 1 ? "y" : "ies"
         } would be published.`,
       );
-      if (totalIssues > 0 || fatalCount > 0) process.exit(1);
+      if (errorCount > 0 || fatalCount > 0) process.exit(1);
       return;
     }
 
-    const publishable = results.filter(
-      (r) => r.create && !r.fatal && r.issues.length === 0,
-    );
+    const publishable = results.filter((r) => r.create && isPublishable(r));
     if (publishable.length === 0) {
       console.error("Nothing to publish.");
       process.exit(1);

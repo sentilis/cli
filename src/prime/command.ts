@@ -5,10 +5,15 @@ import type { PrimeMetadata } from "@sentilis/sdk/prime";
 import { NodeFileSystem } from "@sentilis/sdk/node";
 
 function reportError(err: unknown): never {
-  // Entre publicar el paquete y desplegar la plataforma hay una ventana en la
-  // que la ruta no existe todavía. Decirlo es más barato que un ticket.
   if (err instanceof SentilisApiError && err.status === 404) {
-    console.error("Error: Prime is not available on this server yet. Update required.");
+    // Sin el sobre de error de la API (`UNKNOWN`) el 404 es de la ruta: entre
+    // publicar el paquete y desplegar la plataforma hay una ventana en la que
+    // aún no existe. Con él, la ruta existe y lo que falta es el plan.
+    console.error(
+      err.code === "UNKNOWN"
+        ? "Error: Prime is not available on this server yet. Update required."
+        : "Error: no prime plan with that id in your profile.",
+    );
     process.exit(1);
   }
   const e = err as Error;
@@ -114,7 +119,7 @@ export default defineCommand({
               `\nWarning: this plan cannot take subscriptions yet (${res.data.billingError}).`,
             );
             console.warn(
-              "Check the payment provider in /studio/payments — a restricted key made for Market",
+              "Check Stripe in Settings → Integrations → Stripe (/studio/settings/integrations/stripe): a restricted key made for Market",
             );
             console.warn(
               "does not have the Products, Prices, Customers and Subscriptions permissions.",
