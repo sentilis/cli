@@ -1,6 +1,6 @@
 {
   "name": "@sentilis/cli",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "Sentilis CLI — publish Markdown bio, press, market, prime and gallery content to Sentilis. Built on @sentilis/sdk.",
   "license": "MIT",
   "type": "module",
