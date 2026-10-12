@@ -93,7 +93,7 @@
     "prepublishOnly": "npm run verify"
   },
   "dependencies": {
-    "@sentilis/sdk": "^1.0.0",
+    "@sentilis/sdk": "^1.1.0",
     "citty": "^0.2.1"
   },
   "devDependencies": {
